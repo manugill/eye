@@ -1,0 +1,54 @@
+{
+  "name": "eye",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "parcel src/index.html -p 3000",
+    "exokit-dev": "nodemon --exec \"node --experimental-worker ./node_modules/exokit/src/index.js -l dist/index.html\"",
+    "theia-build": "yarn theisa build",
+    "theia-start": "yarn theia start -p 3001",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manugill/eye.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/manugill/eye/issues"
+  },
+  "homepage": "https://github.com/manugill/eye#readme",
+  "dependencies": {
+    "@novnc/novnc": "^1.1.0",
+    "@theia/callhierarchy": "next",
+    "@theia/file-search": "next",
+    "@theia/git": "next",
+    "@theia/json": "next",
+    "@theia/markers": "next",
+    "@theia/merge-conflicts": "next",
+    "@theia/messages": "next",
+    "@theia/mini-browser": "next",
+    "@theia/navigator": "next",
+    "@theia/outline-view": "next",
+    "@theia/preferences": "next",
+    "@theia/preview": "next",
+    "@theia/search-in-workspace": "next",
+    "@theia/terminal": "next",
+    "@theia/textmate-grammars": "next",
+    "@theia/typescript": "next",
+    "exokit": "^0.0.525",
+    "nodemon": "^2.0.2",
+    "parcel": "^1.12.4",
+    "rfb2": "^0.2.2",
+    "three": "0.103.0",
+    "typescript": "latest"
+  },
+  "devDependencies": {
+    "@theia/cli": "next"
+  },
+  "browserslist": [
+    "last 1 Chrome versions"
+  ]
+}
