@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"jsx": "react",
+		"strict": true,
+		"noImplicitAny": false,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true
+	}
+}

@@ -1,0 +1,68 @@
+{
+  "scripts": {
+    "prepare": "snowpack --include \"src/**/*.js\"",
+    "setup": "rimraf public && npm run copy && npm run build:esm",
+    "dev": "npm run setup && concurrently \"npm run build:ts:watch\" \"npm run build:js:watch\" \"serve -s public -p 3000\"",
+    "start": "npm run dev",
+    "build": "npm run setup && npm run build:ts && npm run build:js",
+    "build:esm": "snowpack --dest public/web_modules --optimize",
+    "build:css": "sass src/app.scss public/static/app.min.css --style compressed --no-source-map",
+    "build:css:watch": "sass --watch src/app.scss public/static/app.min.css --style compressed --no-source-map",
+    "build:js": "babel public -d public --ignore 'public/web_modules/*.js'",
+    "build:js:watch": "babel public -d public --ignore 'public/web_modules/*.js' --watch",
+    "build:ts": "tsc",
+    "build:ts:watch": "tsc -w",
+    "copy": "copyfiles \"src/**/*.html\" \"src/**/*.css\" \"src/**/*.gif\" \"src/**/*.jpg\" \"src/**/*.png\" \"src/**/*.svg\" public -u 1",
+    "lint": "eslint --ext .ts,.tsx src"
+  },
+  "snowpack": {
+    "webDependencies": [
+      "three",
+      "debounce",
+      "react-three-fiber",
+      "react",
+      "react-dom"
+    ]
+  },
+  "dependencies": {
+    "@types/react": "^16.9.17",
+    "@types/react-dom": "^16.9.4",
+    "es-module-shims": "^0.4.6",
+    "react": "yarn:@reactesm/react@^0.1.0",
+    "react-dom": "yarn:@reactesm/react-dom@^0.1.1",
+    "react-three-fiber": "^4.0.5",
+    "rimraf": "^3.0.0",
+    "three": "^0.112.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.3.3",
+    "@typescript-eslint/eslint-plugin": "^2.15.0",
+    "@typescript-eslint/parser": "^2.15.0",
+    "babel-plugin-module-resolver": "^3.2.0",
+    "concurrently": "^5.0.2",
+    "copyfiles": "^2.1.1",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.17.0",
+    "prettier": "^1.19.1",
+    "serve": "^11.3.0",
+    "snowpack": "^1.0.2",
+    "stylelint": "^12.0.1",
+    "stylelint-config-prettier": "^8.0.0",
+    "stylelint-config-standard": "^19.0.0",
+    "stylelint-order": "^4.0.0",
+    "typescript": "^3.7.4"
+  }
+}

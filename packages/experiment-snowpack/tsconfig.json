@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
+    "lib": ["dom", "esnext"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "noImplicitAny": false,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "outDir": "public",
+    "sourceMap": true,
+    "target": "esnext",
+    "paths": {
+      "/web_modules/*.js": [
+        "node_modules/@types/*",
+        "node_modules/*",
+        "public/web_modules/*"
+      ]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}
