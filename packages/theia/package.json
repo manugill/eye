@@ -1,4 +1,5 @@
 {
+  "name": "theia",
   "private": true,
   "scripts": {
     "build": "yarn theia build",

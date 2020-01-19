@@ -1,0 +1,17 @@
+{
+  "name": "electron-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "electron src/server.js",
+    "dev": "electron src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^7.1.9",
+    "socket.io": "^2.3.0"
+  }
+}

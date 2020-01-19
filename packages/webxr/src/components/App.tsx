@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import React, { useRef, useMemo } from 'react'
 import { Canvas, useFrame } from 'react-three-fiber'
 import { WebGLRenderer } from 'three'
+import io from 'socket.io-client'
 
 function Stars() {
 	let group = useRef()
@@ -38,7 +39,81 @@ function Stars() {
 	)
 }
 
-const createButton = function(renderer: WebGLRenderer, sessionCallback) {
+function Browser() {
+	console.log('hello')
+
+	const socket = useMemo(() => io('http://localhost:3001'), undefined)
+	const geometry = useMemo(() => new THREE.PlaneGeometry(1080, 640), undefined)
+	const material = useMemo(() => {
+		const material = new THREE.MeshBasicMaterial({
+			color: new THREE.Color('lightpink'),
+			side: THREE.DoubleSide,
+		})
+
+		socket.on('paint', buffer => {
+			// bitmap
+			const imageData = new ImageData(new Uint8ClampedArray(buffer), 1080, 640)
+			material.setValues({ map: new THREE.CanvasTexture(imageData) })
+			//
+			// png
+			// const blob = new Blob([buffer], { type: 'image/bmp' })
+			// const url = URL.createObjectURL(blob)
+			// // console.log('buffer', buffer, blob, url)
+			// let img = new Image()
+			// img.onload = () => {
+			// 	// console.log('img', img)
+			// 	material.setValues({ map: new THREE.CanvasTexture(img) })
+			// }
+			// img.src = url
+			//
+			// jpeg handling
+			// let img = new Image()
+			// img.onload = () => {
+			// 	material.setValues({ map: new THREE.CanvasTexture(img) })
+			// }
+			// img.src = URL.createObjectURL(new Blob([buffer], { type: 'image/jpeg' }))
+		})
+
+		socket.emit('move')
+		setTimeout(() => socket.emit('move'), 500)
+
+		var size = 20000
+		var data = new Uint8Array(3 * size)
+		for (var i = 0; i < size; i++) {
+			var stride = i * 3
+			data[stride] = 255
+			data[stride + 1] = 0
+			data[stride + 2] = 0
+		}
+		const texture = new THREE.DataTexture(data, 100, 100, THREE.RGBFormat)
+		material.map = texture
+
+		return material
+	}, undefined)
+
+	return (
+		<mesh
+			geometry={geometry}
+			material={material}
+			position={[0, 0, -600]}
+			onClick={({ nativeEvent }) => {
+				console.log('nativeEvent', nativeEvent)
+				socket.emit('event', nativeEvent)
+			}}
+			onWheel={({ nativeEvent }) => {
+				console.log('wheel spins', nativeEvent)
+				// console.log('eventObj', protoObject(nativeEvent))
+				// socket.emit('event', protoObject(nativeEvent))
+			}}
+		/>
+	)
+}
+
+// other stuff
+const createButton = function(
+	renderer: WebGLRenderer,
+	sessionCallback = undefined,
+) {
 	var currentSession
 
 	function showEnterVR(/*device*/) {
@@ -174,8 +249,9 @@ export default function App() {
 	return (
 		<Canvas
 			vr
-			camera={{ position: [0, 0, 15] }}
+			camera={{ position: [0, 0, 0] }}
 			onCreated={context => {
+				console.log('context', context)
 				document.body.appendChild(createButton(context.gl))
 			}}>
 			<ambientLight intensity={0.5} />
@@ -186,7 +262,7 @@ export default function App() {
 				penumbra={1}
 				castShadow
 			/>
-			<Stars />
+			<Browser />
 		</Canvas>
 	)
 }
