@@ -1,6 +1,9 @@
 // @ts-check
 const { app, BrowserWindow } = require('electron');
 
+// app.disableHardwareAcceleration();
+app.commandLine.appendSwitch('force-device-scale-factor', '1');
+
 let window;
 app.once('ready', () => {
   window = new BrowserWindow({

@@ -95934,8 +95934,7 @@ var mouseCoords = function (mesh, e) {
   };
 };
 
-function Browser(_a) {
-  var context = _a.context;
+function Browser() {
   var meshRef = react_1.useRef();
   var mesh = meshRef.current;
   var socket = react_1.useMemo(function () {
@@ -95971,18 +95970,6 @@ function Browser(_a) {
     setTimeout(function () {
       return socket.emit('move');
     }, 500);
-    var size = 20000;
-    var data = new Uint8Array(3 * size);
-
-    for (var i = 0; i < size; i++) {
-      var stride = i * 3;
-      data[stride] = 255;
-      data[stride + 1] = 255;
-      data[stride + 2] = 255;
-    }
-
-    var texture = new THREE.DataTexture(data, 100, 100, THREE.RGBFormat);
-    material.map = texture;
     return material;
   }, undefined);
   return react_1.default.createElement(react_1.default.Fragment, null, react_1.default.createElement("mesh", {
@@ -96016,7 +96003,6 @@ function Browser(_a) {
       }, mouseCoords(mesh, e)));
     },
     onWheel: function (e) {
-      console.log('e', e);
       socket.emit('event', __assign(__assign({
         type: 'mouseWheel'
       }, mouseCoords(mesh, e)), {

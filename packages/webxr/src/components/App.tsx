@@ -27,7 +27,7 @@ const mouseCoords = (mesh, e) => {
 	}
 }
 
-function Browser({ context }) {
+function Browser() {
 	const meshRef = useRef()
 	const mesh = meshRef.current as any
 
@@ -56,19 +56,10 @@ function Browser({ context }) {
 		socket.emit('move')
 		setTimeout(() => socket.emit('move'), 500)
 
-		var size = 20000
-		var data = new Uint8Array(3 * size)
-		for (var i = 0; i < size; i++) {
-			var stride = i * 3
-			data[stride] = 255
-			data[stride + 1] = 255
-			data[stride + 2] = 255
-		}
-		const texture = new THREE.DataTexture(data, 100, 100, THREE.RGBFormat)
-		material.map = texture
-
 		return material
 	}, undefined)
+
+
 
 	return (
 		<>
@@ -93,7 +84,6 @@ function Browser({ context }) {
 					socket.emit('event', { type: 'mouseEnter', ...mouseCoords(mesh, e) })
 				}}
 				onWheel={e => {
-					console.log('e', e)
 					socket.emit('event', {
 						type: 'mouseWheel',
 						...mouseCoords(mesh, e),
