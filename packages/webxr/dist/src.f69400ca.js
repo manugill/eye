@@ -95871,6 +95871,20 @@ exports.Socket = require('./socket');
 },{"./url":"../node_modules/socket.io-client/lib/url.js","socket.io-parser":"../node_modules/socket.io-parser/index.js","./manager":"../node_modules/socket.io-client/lib/manager.js","debug":"../node_modules/debug/src/browser.js","./socket":"../node_modules/socket.io-client/lib/socket.js"}],"components/App.tsx":[function(require,module,exports) {
 "use strict";
 
+var __assign = this && this.__assign || function () {
+  __assign = Object.assign || function (t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+      s = arguments[i];
+
+      for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+    }
+
+    return t;
+  };
+
+  return __assign.apply(this, arguments);
+};
+
 var __importStar = this && this.__importStar || function (mod) {
   if (mod && mod.__esModule) return mod;
   var result = {};
@@ -95897,53 +95911,38 @@ var react_three_fiber_1 = require("react-three-fiber");
 
 var socket_io_client_1 = __importDefault(require("socket.io-client"));
 
-function Stars() {
-  var group = react_1.useRef();
-  var theta = 0;
-  react_three_fiber_1.useFrame(function () {
-    // Some things maybe shouldn't be declarative, we're in the render-loop here with full access to the instance
-    var r = 5 * Math.sin(THREE.Math.degToRad(theta += 0.01));
-    var s = Math.cos(THREE.Math.degToRad(theta * 2));
-    group.current.rotation.set(r, r, r);
-    group.current.scale.set(s, s, s);
-  });
+var mouseCoords = function (mesh, e) {
+  var x = mesh.geometry.parameters.width / 2 + e.point.x;
+  var y = mesh.geometry.parameters.height / 2 + -e.point.y;
+  return {
+    x: x,
+    y: y,
+    globalX: x,
+    globalY: y,
+    movementX: e.movementX,
+    movementY: e.movementY,
+    deltaX: e.deltaX,
+    deltaY: e.deltaY,
+    wheelTicksX: e.wheelTicksX,
+    wheelTicksY: e.wheelTicksY,
+    accelerationRatioX: 1,
+    accelerationRatioY: 1,
+    hasPreciseScrollingDeltas: true,
+    canScroll: true,
+    clickCount: 1,
+    button: e.button === 1 ? 'middle' : e.button === 2 ? 'right' : 'left'
+  };
+};
 
-  var _a = react_1.useMemo(function () {
-    var geo = new THREE.SphereBufferGeometry(1, 10, 10);
-    var mat = new THREE.MeshBasicMaterial({
-      color: new THREE.Color('lightpink')
-    });
-    var coords = new Array(1000).fill().map(function (i) {
-      return [Math.random() * 800 - 400, Math.random() * 800 - 400, Math.random() * 800 - 400];
-    });
-    return [geo, mat, coords];
-  }, []),
-      geo = _a[0],
-      mat = _a[1],
-      coords = _a[2];
-
-  return react_1.default.createElement("group", {
-    ref: group
-  }, coords.map(function (_a, i) {
-    var p1 = _a[0],
-        p2 = _a[1],
-        p3 = _a[2];
-    return react_1.default.createElement("mesh", {
-      key: i,
-      geometry: geo,
-      material: mat,
-      position: [p1, p2, p3]
-    });
-  }));
-}
-
-function Browser() {
-  console.log('hello');
+function Browser(_a) {
+  var context = _a.context;
+  var meshRef = react_1.useRef();
+  var mesh = meshRef.current;
   var socket = react_1.useMemo(function () {
     return socket_io_client_1.default('http://localhost:3001');
   }, undefined);
   var geometry = react_1.useMemo(function () {
-    return new THREE.PlaneGeometry(1080, 640);
+    return new THREE.PlaneGeometry(1200, 800);
   }, undefined);
   var material = react_1.useMemo(function () {
     var material = new THREE.MeshBasicMaterial({
@@ -95952,27 +95951,21 @@ function Browser() {
     });
     socket.on('paint', function (buffer) {
       // bitmap
-      var imageData = new ImageData(new Uint8ClampedArray(buffer), 1080, 640);
-      material.setValues({
-        map: new THREE.CanvasTexture(imageData)
-      }); //
-      // png
-      // const blob = new Blob([buffer], { type: 'image/bmp' })
-      // const url = URL.createObjectURL(blob)
-      // // console.log('buffer', buffer, blob, url)
-      // let img = new Image()
-      // img.onload = () => {
-      // 	// console.log('img', img)
-      // 	material.setValues({ map: new THREE.CanvasTexture(img) })
-      // }
-      // img.src = url
+      // console.log('buffer', buffer)
+      // const imageData = new ImageData(new Uint8ClampedArray(buffer), 1080, 640)
+      // console.log('-- imageData', imageData)
+      // material.setValues({ map: new THREE.CanvasTexture(imageData) })
       //
-      // jpeg handling
-      // let img = new Image()
-      // img.onload = () => {
-      // 	material.setValues({ map: new THREE.CanvasTexture(img) })
-      // }
-      // img.src = URL.createObjectURL(new Blob([buffer], { type: 'image/jpeg' }))
+      // png or jpeg
+      var img = new Image();
+
+      img.onload = function () {
+        return material.setValues({
+          map: new THREE.CanvasTexture(img)
+        });
+      };
+
+      img.src = URL.createObjectURL(new Blob([buffer]));
     });
     socket.emit('move');
     setTimeout(function () {
@@ -95984,29 +95977,54 @@ function Browser() {
     for (var i = 0; i < size; i++) {
       var stride = i * 3;
       data[stride] = 255;
-      data[stride + 1] = 0;
-      data[stride + 2] = 0;
+      data[stride + 1] = 255;
+      data[stride + 2] = 255;
     }
 
     var texture = new THREE.DataTexture(data, 100, 100, THREE.RGBFormat);
     material.map = texture;
     return material;
   }, undefined);
-  return react_1.default.createElement("mesh", {
+  return react_1.default.createElement(react_1.default.Fragment, null, react_1.default.createElement("mesh", {
+    ref: meshRef,
     geometry: geometry,
     material: material,
     position: [0, 0, -600],
-    onClick: function (_a) {
-      var nativeEvent = _a.nativeEvent;
-      console.log('nativeEvent', nativeEvent);
-      socket.emit('event', nativeEvent);
+    onPointerMove: function (e) {
+      socket.emit('event', __assign({
+        type: 'mouseMove'
+      }, mouseCoords(mesh, e)));
     },
-    onWheel: function (_a) {
-      var nativeEvent = _a.nativeEvent;
-      console.log('wheel spins', nativeEvent); // console.log('eventObj', protoObject(nativeEvent))
-      // socket.emit('event', protoObject(nativeEvent))
+    onPointerDown: function (e) {
+      socket.emit('event', __assign({
+        type: 'mouseDown'
+      }, mouseCoords(mesh, e)));
+    },
+    onPointerUp: function (e) {
+      socket.emit('event', __assign({
+        type: 'mouseUp'
+      }, mouseCoords(mesh, e)));
+    },
+    onPointerOut: function (e) {
+      socket.emit('event', __assign({
+        type: 'mouseLeave'
+      }, mouseCoords(mesh, e)));
+    },
+    onPointerOver: function (e) {
+      socket.emit('event', __assign({
+        type: 'mouseEnter'
+      }, mouseCoords(mesh, e)));
+    },
+    onWheel: function (e) {
+      console.log('e', e);
+      socket.emit('event', __assign(__assign({
+        type: 'mouseWheel'
+      }, mouseCoords(mesh, e)), {
+        deltaX: e.deltaX,
+        deltaY: e.deltaY
+      }));
     }
-  });
+  }));
 } // other stuff
 
 
@@ -96133,13 +96151,17 @@ var createButton = function (renderer, sessionCallback) {
 };
 
 function App() {
+  var _a = react_1.useState(undefined),
+      context = _a[0],
+      setContext = _a[1];
+
   return react_1.default.createElement(react_three_fiber_1.Canvas, {
     vr: true,
     camera: {
       position: [0, 0, 0]
     },
     onCreated: function (context) {
-      console.log('context', context);
+      setContext(context);
       document.body.appendChild(createButton(context.gl));
     }
   }, react_1.default.createElement("ambientLight", {
@@ -96150,7 +96172,9 @@ function App() {
     angle: 0.2,
     penumbra: 1,
     castShadow: true
-  }), react_1.default.createElement(Browser, null));
+  }), react_1.default.createElement(Browser, {
+    context: context
+  }));
 }
 
 exports.default = App;
@@ -96203,7 +96227,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64414" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49838" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

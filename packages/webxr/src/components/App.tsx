@@ -1,49 +1,38 @@
 import * as THREE from 'three'
-import React, { useRef, useMemo } from 'react'
-import { Canvas, useFrame } from 'react-three-fiber'
+import React, { useState, useRef, useMemo } from 'react'
+import { Canvas, CanvasContext } from 'react-three-fiber'
 import { WebGLRenderer } from 'three'
 import io from 'socket.io-client'
 
-function Stars() {
-	let group = useRef()
-	let theta = 0
-	useFrame(() => {
-		// Some things maybe shouldn't be declarative, we're in the render-loop here with full access to the instance
-		const r = 5 * Math.sin(THREE.Math.degToRad((theta += 0.01)))
-		const s = Math.cos(THREE.Math.degToRad(theta * 2))
-		group.current.rotation.set(r, r, r)
-		group.current.scale.set(s, s, s)
-	})
-
-	const [geo, mat, coords] = useMemo(() => {
-		const geo = new THREE.SphereBufferGeometry(1, 10, 10)
-		const mat = new THREE.MeshBasicMaterial({
-			color: new THREE.Color('lightpink'),
-		})
-		const coords = new Array(1000)
-			.fill()
-			.map(i => [
-				Math.random() * 800 - 400,
-				Math.random() * 800 - 400,
-				Math.random() * 800 - 400,
-			])
-		return [geo, mat, coords]
-	}, [])
-
-	return (
-		<group ref={group}>
-			{coords.map(([p1, p2, p3], i) => (
-				<mesh key={i} geometry={geo} material={mat} position={[p1, p2, p3]} />
-			))}
-		</group>
-	)
+const mouseCoords = (mesh, e) => {
+	const x = mesh.geometry.parameters.width / 2 + e.point.x
+	const y = mesh.geometry.parameters.height / 2 + (-e.point.y)
+	return {
+		x,
+		y,
+		globalX: x,
+		globalY: y,
+		movementX: e.movementX,
+		movementY: e.movementY,
+		deltaX: e.deltaX,
+		deltaY: e.deltaY,
+		wheelTicksX: e.wheelTicksX,
+		wheelTicksY: e.wheelTicksY,
+		accelerationRatioX: 1,
+		accelerationRatioY: 1,
+		hasPreciseScrollingDeltas: true,
+		canScroll: true,
+		clickCount: 1,
+		button: e.button === 1 ? 'middle' : e.button === 2 ? 'right' : 'left',
+	}
 }
 
-function Browser() {
-	console.log('hello')
+function Browser({ context }) {
+	const meshRef = useRef()
+	const mesh = meshRef.current as any
 
 	const socket = useMemo(() => io('http://localhost:3001'), undefined)
-	const geometry = useMemo(() => new THREE.PlaneGeometry(1080, 640), undefined)
+	const geometry = useMemo(() => new THREE.PlaneGeometry(1200, 800), undefined)
 	const material = useMemo(() => {
 		const material = new THREE.MeshBasicMaterial({
 			color: new THREE.Color('lightpink'),
@@ -52,26 +41,16 @@ function Browser() {
 
 		socket.on('paint', buffer => {
 			// bitmap
-			const imageData = new ImageData(new Uint8ClampedArray(buffer), 1080, 640)
-			material.setValues({ map: new THREE.CanvasTexture(imageData) })
+			// console.log('buffer', buffer)
+			// const imageData = new ImageData(new Uint8ClampedArray(buffer), 1080, 640)
+			// console.log('-- imageData', imageData)
+			// material.setValues({ map: new THREE.CanvasTexture(imageData) })
 			//
-			// png
-			// const blob = new Blob([buffer], { type: 'image/bmp' })
-			// const url = URL.createObjectURL(blob)
-			// // console.log('buffer', buffer, blob, url)
-			// let img = new Image()
-			// img.onload = () => {
-			// 	// console.log('img', img)
-			// 	material.setValues({ map: new THREE.CanvasTexture(img) })
-			// }
-			// img.src = url
-			//
-			// jpeg handling
-			// let img = new Image()
-			// img.onload = () => {
-			// 	material.setValues({ map: new THREE.CanvasTexture(img) })
-			// }
-			// img.src = URL.createObjectURL(new Blob([buffer], { type: 'image/jpeg' }))
+			// png or jpeg
+			let img = new Image()
+			img.onload = () =>
+				material.setValues({ map: new THREE.CanvasTexture(img) })
+			img.src = URL.createObjectURL(new Blob([buffer]))
 		})
 
 		socket.emit('move')
@@ -82,8 +61,8 @@ function Browser() {
 		for (var i = 0; i < size; i++) {
 			var stride = i * 3
 			data[stride] = 255
-			data[stride + 1] = 0
-			data[stride + 2] = 0
+			data[stride + 1] = 255
+			data[stride + 2] = 255
 		}
 		const texture = new THREE.DataTexture(data, 100, 100, THREE.RGBFormat)
 		material.map = texture
@@ -92,20 +71,38 @@ function Browser() {
 	}, undefined)
 
 	return (
-		<mesh
-			geometry={geometry}
-			material={material}
-			position={[0, 0, -600]}
-			onClick={({ nativeEvent }) => {
-				console.log('nativeEvent', nativeEvent)
-				socket.emit('event', nativeEvent)
-			}}
-			onWheel={({ nativeEvent }) => {
-				console.log('wheel spins', nativeEvent)
-				// console.log('eventObj', protoObject(nativeEvent))
-				// socket.emit('event', protoObject(nativeEvent))
-			}}
-		/>
+		<>
+			<mesh
+				ref={meshRef}
+				geometry={geometry}
+				material={material}
+				position={[0, 0, -600]}
+				onPointerMove={e => {
+					socket.emit('event', { type: 'mouseMove', ...mouseCoords(mesh, e) })
+				}}
+				onPointerDown={e => {
+					socket.emit('event', { type: 'mouseDown', ...mouseCoords(mesh, e) })
+				}}
+				onPointerUp={e => {
+					socket.emit('event', { type: 'mouseUp', ...mouseCoords(mesh, e) })
+				}}
+				onPointerOut={e => {
+					socket.emit('event', { type: 'mouseLeave', ...mouseCoords(mesh, e) })
+				}}
+				onPointerOver={e => {
+					socket.emit('event', { type: 'mouseEnter', ...mouseCoords(mesh, e) })
+				}}
+				onWheel={e => {
+					console.log('e', e)
+					socket.emit('event', {
+						type: 'mouseWheel',
+						...mouseCoords(mesh, e),
+						deltaX: e.deltaX,
+						deltaY: e.deltaY,
+					})
+				}}
+			/>
+		</>
 	)
 }
 
@@ -246,12 +243,13 @@ const createButton = function(
 }
 
 export default function App() {
+	const [context, setContext] = useState<CanvasContext>(undefined)
 	return (
 		<Canvas
 			vr
 			camera={{ position: [0, 0, 0] }}
 			onCreated={context => {
-				console.log('context', context)
+				setContext(context)
 				document.body.appendChild(createButton(context.gl))
 			}}>
 			<ambientLight intensity={0.5} />
@@ -262,7 +260,7 @@ export default function App() {
 				penumbra={1}
 				castShadow
 			/>
-			<Browser />
+			<Browser context={context} />
 		</Canvas>
 	)
 }
