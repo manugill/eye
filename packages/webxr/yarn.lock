@@ -828,17 +828,25 @@
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.2.tgz#690a1475b84f2a884fd07cd797c00f5f31356ea8"
   integrity sha512-ce5d3q03Ex0sy4R14722Rmt6MT07Ua+k4FwDfdcToYJcMKNtRVQvJ6JCAPdAmAnbRb6CsX6aYb9m96NGod9uTw==
 
-"@types/react-dom@^16.9.4":
-  version "16.9.4"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.9.4.tgz#0b58df09a60961dcb77f62d4f1832427513420df"
-  integrity sha512-fya9xteU/n90tda0s+FtN5Ym4tbgxpq/hb/Af24dvs6uYnYn+fspaxw5USlw0R8apDNwxsqumdRoCoKitckQqw==
+"@types/react-dom@^16.9.5":
+  version "16.9.5"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.9.5.tgz#5de610b04a35d07ffd8f44edad93a71032d9aaa7"
+  integrity sha512-BX6RQ8s9D+2/gDhxrj8OW+YD4R+8hj7FEM/OJHGNR0KipE1h1mSsf39YeyC81qafkq+N3rU3h3RFbLSwE5VqUg==
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^16.9.17":
+"@types/react@*":
   version "16.9.17"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.17.tgz#58f0cc0e9ec2425d1441dd7b623421a867aa253e"
   integrity sha512-UP27In4fp4sWF5JgyV6pwVPAQM83Fj76JOcg02X5BZcpSu5Wx+fP9RMqc2v0ssBoQIFvD5JdKY41gjJJKmw6Bg==
+  dependencies:
+    "@types/prop-types" "*"
+    csstype "^2.2.0"
+
+"@types/react@^16.9.19":
+  version "16.9.19"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.19.tgz#c842aa83ea490007d29938146ff2e4d9e4360c40"
+  integrity sha512-LJV97//H+zqKWMms0kvxaKYJDG05U2TtQB3chRLF8MPNs+MQh/H1aGlyDUxjaHvu08EAGerdX2z4LTBc7ns77A==
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
@@ -4304,10 +4312,10 @@ react-reconciler@0.24.0:
     prop-types "^15.6.2"
     scheduler "^0.18.0"
 
-react-three-fiber@^4.0.5:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/react-three-fiber/-/react-three-fiber-4.0.5.tgz#d4e1677a1509fe4d27dff3fa93cb550176373c1d"
-  integrity sha512-Co509CbvK6DqT/Ktr7kaPsArq8ASzAtRv0vOrE4nyCQ4MDkoZBD6arnjcyjMrQrHKBZjj60E1zATv+5vqRS3NQ==
+react-three-fiber@^4.0.11:
+  version "4.0.11"
+  resolved "https://registry.yarnpkg.com/react-three-fiber/-/react-three-fiber-4.0.11.tgz#6d2284b0c8ac93ce10292f387eba7e1627a5a1aa"
+  integrity sha512-7VUdwU1m8FJFH44ggkDc5K4Tjxzulq/wuDpYyV+gALD0qUGPkQFnu4GVx0U3fCGPnI95d6ju8Xshd/S5JNvZYg==
   dependencies:
     "@babel/runtime" "^7.7.7"
     "@juggle/resize-observer" "^3.0.2"
@@ -5054,11 +5062,6 @@ terser@^4.3.9:
     commander "^2.20.0"
     source-map "~0.6.1"
     source-map-support "~0.5.12"
-
-three.interaction@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/three.interaction/-/three.interaction-0.2.2.tgz#01ce80ba7cacd24ada09dc57f1d64e9dd5d7a0b0"
-  integrity sha512-yWQ5L0SUl+TzxVGFRNZAf4hpRF84zYZVpcyGstzhO0vbRdUDobPiPV6QmUh0JZVS5gEUguAd09ONyNJEczMOyA==
 
 three@*, three@^0.112.1:
   version "0.112.1"

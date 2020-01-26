@@ -766,6 +766,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
+uWebSockets.js@uNetworking/uWebSockets.js#v17.1.0:
+  version "17.1.0"
+  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/5b524b61b25c78325304a71f810dfdfaa7f5e5eb"
+
 universalify@^0.1.0:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/universalify/-/universalify-0.1.2.tgz#b646f69be3942dabcecc9d6639c80dc105efaa66"

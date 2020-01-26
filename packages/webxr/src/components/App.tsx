@@ -1,12 +1,40 @@
 import * as THREE from 'three'
-import React, { useState, useRef, useMemo } from 'react'
-import { Canvas, CanvasContext } from 'react-three-fiber'
-import { WebGLRenderer } from 'three'
+import React, {
+	Suspense,
+	useState,
+	useRef,
+	useCallback,
+	useMemo,
+	useEffect,
+} from 'react'
+import {
+	Canvas,
+	CanvasContext,
+	Dom,
+	useLoader,
+	useCamera,
+	useUpdate,
+	useThree,
+} from 'react-three-fiber'
 import io from 'socket.io-client'
 
+import createButton from './createButton'
+import pointerImg from '../static/redball.png'
+
+function Sprite({ url, ...props }) {
+	const texture = useLoader(THREE.TextureLoader, url)
+	console.log('props', props)
+	return (
+		<sprite scale={[1, 1]} position={[0, 0, -10]} {...props}>
+			<spriteMaterial attach='material' map={texture} />
+		</sprite>
+	)
+}
 const mouseCoords = (mesh, e) => {
+	if (!mesh) return { type: 'mouseMove', x: 0, y: 0, button: 'left' }
 	const x = mesh.geometry.parameters.width / 2 + e.point.x
-	const y = mesh.geometry.parameters.height / 2 + (-e.point.y)
+	const y = mesh.geometry.parameters.height / 2 + -e.point.y
+	// console.log('coords', e.point, mesh)
 	return {
 		x,
 		y,
@@ -24,223 +52,194 @@ const mouseCoords = (mesh, e) => {
 		canScroll: true,
 		clickCount: 1,
 		button: e.button === 1 ? 'middle' : e.button === 2 ? 'right' : 'left',
+		time: Date.now(),
 	}
 }
 
 function Browser() {
+	const context = useThree()
+	const { mouse } = context
+	console.log('context', context)
+
 	const meshRef = useRef()
 	const mesh = meshRef.current as any
+	const [currentMaterial, setMaterial] = useState<any>()
 
-	const socket = useMemo(() => io('http://localhost:3001'), undefined)
-	const geometry = useMemo(() => new THREE.PlaneGeometry(1200, 800), undefined)
-	const material = useMemo(() => {
-		const material = new THREE.MeshBasicMaterial({
-			color: new THREE.Color('lightpink'),
-			side: THREE.DoubleSide,
-		})
+	const socket = useMemo(() => io('http://localhost:3001'), [])
 
-		socket.on('paint', buffer => {
-			// bitmap
-			// console.log('buffer', buffer)
-			// const imageData = new ImageData(new Uint8ClampedArray(buffer), 1080, 640)
-			// console.log('-- imageData', imageData)
-			// material.setValues({ map: new THREE.CanvasTexture(imageData) })
-			//
-			// png or jpeg
-			let img = new Image()
-			img.onload = () =>
-				material.setValues({ map: new THREE.CanvasTexture(img) })
-			img.src = URL.createObjectURL(new Blob([buffer]))
-		})
+	const materialRef = useCallback(material => {
+		if (currentMaterial !== undefined) return
+		console.log('actualling creating material')
+		setMaterial(material)
 
-		socket.emit('move')
-		setTimeout(() => socket.emit('move'), 500)
+		const mesh = material.parent
+		console.log('material', material)
 
-		return material
-	}, undefined)
+		const loader = new THREE.TextureLoader()
+		const texture = loader.load(
+			'https://source.unsplash.com/daily/1200x800',
+			texture => {
+				socket.on('paint', ({ time, buffer, rect }) => {
+					const receivedTime = Date.now()
 
+					// bitmap
+					// bitmap doesn't work on macOS
+					// const arr =  new Uint8ClampedArray(buffer)
+					// console.log('- clamped', arr)
+					// const imageData = new ImageData(arr, rect.width, rect.height)
+					// const tNew = new THREE.CanvasTexture(imageData)
+					// const p = new THREE.Vector2(rect.x, mesh.geometry.parameters.height -(rect.y + rect.height))
+					// // context.gl.copyTextureToTexture(p, tNew, texture)
+					// material.setValues({ map: tNew })
+					//
+					// png or jpeg
+					const url = URL.createObjectURL(
+						new Blob([buffer], { type: 'image/jpeg' }),
+					)
 
+					let img = new Image()
+					img.onload = () => {
+						const loadedTime = Date.now()
+						const textureNew = new THREE.CanvasTexture(img)
+						const p = new THREE.Vector2(
+							rect.x,
+							mesh.geometry.parameters.height - (rect.y + rect.height),
+						)
+						context.gl.copyTextureToTexture(p, textureNew, texture)
+						console.log(
+							'time diff',
+							receivedTime - time,
+							loadedTime - time,
+							Date.now() - time,
+							Date.now() - receivedTime,
+							Date.now() - loadedTime,
+						)
+					}
+					img.src = url
+				})
+
+				setTimeout(() => socket.emit('move'), 500)
+
+				texture.minFilter = THREE.LinearFilter
+				texture.generateMipmaps = false
+			},
+		)
+		material.setValues({ map: texture })
+	}, [])
+
+	// const raycast = useMemo(() => {
+	// 	if (!context) return undefined
+
+	// 	// const camera = vr
+	// 	// 	? context.gl.xr.getCamera(context.camera).cameras[1]
+	// 	// 	: context.camera
+	// 	// let raycaster = new THREE.Raycaster()
+
+	// 	console.log('oh yeah, got camera!')
+	// 	return function(
+	// 		_: THREE.Raycaster,
+	// 		intersects: THREE.Intersection[],
+	// 	): void {
+	// 		if (!vr) {
+	// 			raycaster.setFromCamera(mouse, camera)
+	// 			const rc = this.constructor.prototype.raycast.bind(this)
+	// 			if (rc) rc(raycaster, intersects)
+	// 		} else {
+	// 			const { domElement } = context.gl
+	// 			var rW = camera.viewport.z / domElement.width
+	// 			var rH = camera.viewport.w / domElement.height
+	// 			var rX = camera.viewport.x / domElement.height
+	// 			var rY = camera.viewport.y / domElement.height
+	// 			// mouse.x = (x / WIDTH) * 2 - 1
+	// 			// mouse.y = -(y / HEIGHT) * 2 + 1
+	// 			console.log('ratios', rW, rH, rX, rY, camera.viewport)
+	// 			console.log('adjusted x', mouse.x, mouse.x / 0.5 + 1)
+	// 			console.log('adjusted y', mouse.y, mouse.y / 1)
+	// 			mouse.setX(mouse.x / 0.5 + 1)
+
+	// 			raycaster.setFromCamera(mouse, camera)
+	// 			const rc = this.constructor.prototype.raycast.bind(this)
+	// 			// console.log('rc', mouse, raycaster)
+	// 			if (rc) rc(raycaster, intersects)
+	// 		}
+	// 	}
+	// }, [!!context, vr])
 
 	return (
 		<>
 			<mesh
 				ref={meshRef}
-				geometry={geometry}
-				material={material}
+				// raycast={raycast}
 				position={[0, 0, -600]}
 				onPointerMove={e => {
-					socket.emit('event', { type: 'mouseMove', ...mouseCoords(mesh, e) })
+					socket.emit('event', {
+						type: 'mouseMove',
+						...mouseCoords(mesh, e),
+					})
 				}}
 				onPointerDown={e => {
-					socket.emit('event', { type: 'mouseDown', ...mouseCoords(mesh, e) })
+					socket.emit('event', {
+						type: 'mouseDown',
+						...mouseCoords(mesh, e),
+					})
 				}}
 				onPointerUp={e => {
 					socket.emit('event', { type: 'mouseUp', ...mouseCoords(mesh, e) })
 				}}
 				onPointerOut={e => {
-					socket.emit('event', { type: 'mouseLeave', ...mouseCoords(mesh, e) })
+					socket.emit('event', {
+						type: 'mouseLeave',
+						...mouseCoords(mesh, e),
+					})
 				}}
 				onPointerOver={e => {
-					socket.emit('event', { type: 'mouseEnter', ...mouseCoords(mesh, e) })
+					socket.emit('event', {
+						type: 'mouseEnter',
+						...mouseCoords(mesh, e),
+					})
 				}}
 				onWheel={e => {
 					socket.emit('event', {
 						type: 'mouseWheel',
 						...mouseCoords(mesh, e),
-						deltaX: e.deltaX,
-						deltaY: e.deltaY,
+						deltaX: (e as any).deltaX,
+						deltaY: (e as any).deltaY,
 					})
-				}}
-			/>
+				}}>
+				<planeGeometry attach='geometry' args={[1200, 800]} />
+				<meshBasicMaterial
+					ref={materialRef}
+					color={new THREE.Color('white')}
+					attach='material'
+				/>
+			</mesh>
 		</>
 	)
 }
 
-// other stuff
-const createButton = function(
-	renderer: WebGLRenderer,
-	sessionCallback = undefined,
-) {
-	var currentSession
-
-	function showEnterVR(/*device*/) {
-		function onSessionStarted(session) {
-			session.addEventListener('end', onSessionEnded)
-
-			renderer.xr.setSession(session)
-			button.textContent = 'EXIT VR'
-
-			currentSession = session
-			if (sessionCallback) sessionCallback(session)
-		}
-
-		function onSessionEnded(/*event*/) {
-			if (currentSession)
-				currentSession.removeEventListener('end', onSessionEnded)
-
-			button.textContent = 'ENTER VR'
-
-			currentSession = null
-			if (sessionCallback) sessionCallback(null)
-		}
-
-		button.style.display = ''
-
-		button.style.cursor = 'pointer'
-		button.style.left = 'calc(50% - 50px)'
-		button.style.width = '200px'
-
-		button.textContent = 'ENTER VR'
-
-		button.onmouseenter = function() {
-			button.style.opacity = '1.0'
-		}
-
-		button.onmouseleave = function() {
-			button.style.opacity = '0.5'
-		}
-
-		var sessionInit = {
-			optionalFeatures: ['local-floor', 'bounded-floor'],
-		}
-
-		function requestSession() {
-			if (!currentSession) {
-				// WebXR's requestReferenceSpace only works if the corresponding feature
-				// was requested at session creation time. For simplicity, just ask for
-				// the interesting ones as optional features, but be aware that the
-				// requestReferenceSpace call will fail if it turns out to be unavailable.
-				// ('local' is always available for immersive sessions and doesn't need to
-				// be requested separately.)
-				navigator.xr
-					.requestSession('immersive-vr', sessionInit)
-					.then(onSessionStarted)
-			}
-		}
-
-		button.onclick = function() {
-			if (!currentSession) {
-				requestSession()
-			} else {
-				currentSession.end()
-			}
-		}
-	}
-
-	function disableButton() {
-		button.style.display = ''
-
-		button.style.cursor = 'auto'
-		button.style.left = 'calc(50% - 75px)'
-		button.style.width = '150px'
-
-		button.onmouseenter = null
-		button.onmouseleave = null
-
-		button.onclick = null
-	}
-
-	function showWebXRNotFound() {
-		disableButton()
-
-		button.textContent = 'VR NOT SUPPORTED'
-	}
-
-	function stylizeElement(element) {
-		element.style.position = 'absolute'
-		element.style.bottom = '20px'
-		element.style.padding = '12px 6px'
-		element.style.border = '1px solid #fff'
-		element.style.borderRadius = '4px'
-		element.style.background = 'rgba(0,0,0,0.75)'
-		element.style.color = '#fff'
-		element.style.font = 'normal 13px sans-serif'
-		element.style.textAlign = 'center'
-		element.style.opacity = '0.5'
-		element.style.outline = 'none'
-		element.style.zIndex = '999'
-	}
-
-	if ('xr' in navigator) {
-		var button = document.createElement('button')
-		button.style.display = 'none'
-
-		stylizeElement(button)
-
-		navigator.xr.isSessionSupported('immersive-vr').then(function(supported) {
-			supported ? showEnterVR() : showWebXRNotFound()
-		})
-
-		return button
-	} else {
-		var message = document.createElement('a')
-		message.href = 'https://immersiveweb.dev/'
-
-		if (window.isSecureContext === false) {
-			message.innerHTML = 'WEBXR NEEDS HTTPS' // TODO Improve message
-		} else {
-			message.innerHTML = 'WEBXR NOT AVAILABLE'
-		}
-
-		message.style.left = 'calc(50% - 90px)'
-		message.style.width = '180px'
-		message.style.textDecoration = 'none'
-
-		stylizeElement(message)
-
-		return message
-	}
-}
-
 export default function App() {
-	const [context, setContext] = useState<CanvasContext>(undefined)
+	const { mouse } = useThree()
+	const [xr, setXr] = useState<any>(null)
+
+	const updateMousePosition = () => {}
+
 	return (
 		<Canvas
 			vr
-			camera={{ position: [0, 0, 0] }}
 			onCreated={context => {
-				setContext(context)
-				document.body.appendChild(createButton(context.gl))
+				const sessionCallback = session => {
+					console.log('session', session, context)
+					if (context) {
+						if (session) {
+							context.gl.domElement.requestPointerLock()
+						} else {
+							;(document as any).exitPointerLock()
+						}
+					}
+					setXr(session)
+				}
+
+				document.body.appendChild(createButton(context.gl, sessionCallback))
 			}}>
 			<ambientLight intensity={0.5} />
 			<spotLight
@@ -250,7 +249,10 @@ export default function App() {
 				penumbra={1}
 				castShadow
 			/>
-			<Browser context={context} />
+			<Browser />
+			<Suspense fallback={<Dom>loading...</Dom>}>
+				<Sprite url={pointerImg} />
+			</Suspense>
 		</Canvas>
 	)
 }
