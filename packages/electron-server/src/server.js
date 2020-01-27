@@ -4,12 +4,14 @@ const { app, BrowserWindow, nativeImage } = require('electron');
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('force-device-scale-factor', '1');
 
-let window;
-
-app.once('ready', () => {
-  window = new BrowserWindow({
-    width: 1200,
-    height: 800,
+const createWindow = ({
+  url = 'https://github.com',
+  width = '1200',
+  height = '800',
+} = {}) => {
+  const window = new BrowserWindow({
+    width: parseInt(width),
+    height: parseInt(height),
     show: false,
     frame: false,
     transparent: true,
@@ -20,19 +22,33 @@ app.once('ready', () => {
     },
   });
 
-  window.loadURL('https://github.com');
+  window.loadURL(url);
   window.webContents.setFrameRate(60);
+
+  // otherwise the screenshots on windows are less the scrollbar which sucks
   window.webContents.on('did-finish-load', function() {
     window.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
   });
 
-  console.log('electron window started');
-});
+  return window;
+};
 
 var io = require('socket.io')(3001, { origins: '*:*' });
 
-io.on('connection', socket => {
-  console.log('connection');
+app.once('ready', () => {
+  console.log('electron ready, listening for connections...');
+  io.on('connection', onConnection);
+});
+
+const onConnection = socket => {
+  const query = socket.request._query;
+  console.log('connection! query:', query);
+  const window = createWindow(query);
+
+  socket.on('disconnect', reason => {
+    console.log('DISCONNECTED, destroying page!');
+    window.destroy();
+  });
 
   let lastTimeouts = [];
   let lastFullPaint = {
@@ -53,10 +69,9 @@ io.on('connection', socket => {
     paint.rect.height !== lastPaint.rect.height ||
     (lastPaint.buffer && !paint.buffer.equals(lastPaint.buffer));
 
-  // has better framerate
   window.webContents.on('paint', (_, rect, image) => {
     if (rect.width === 0 || rect.height === 0) {
-      console.log('EMPTY FRAME IGNORED', rect);
+      console.log('empty frame ignored', rect);
       return;
     }
     const bounds = window.getBounds();
@@ -72,7 +87,7 @@ io.on('connection', socket => {
       ];
     }
     if (!isPaintChanged(paint)) {
-      console.log('duplicate paint ignore');
+      console.log('duplicate paint ignored');
       return;
     }
     if (isFullPaint) lastFullPaint = paint;
@@ -83,7 +98,7 @@ io.on('connection', socket => {
     //   paint.time - lastPaint.time,
     //   Date.now() - paint.time,
     // );
-    console.log('on paint', rect);
+    console.log('paint emitted', rect);
     socket.emit('paint', paint);
   });
 
@@ -92,22 +107,7 @@ io.on('connection', socket => {
   });
 
   socket.on('event', event => {
-    // console.log('event', event.type, event.button, event.x, event.y)
-    // console.log('event', event.type, Date.now() - event.time);
+    if (event.type === 'mouseDown') console.log('event', query.url, event);
     window.webContents.sendInputEvent(event);
   });
-});
-
-// const exitEvents = [
-//   `exit`,
-//   `SIGINT`,
-//   `SIGUSR1`,
-//   `SIGUSR2`,
-//   `uncaughtException`,
-//   `SIGTERM`,
-// ];
-// exitEvents.forEach(eventType => {
-//   process.on(eventType, () => {
-//     console.log('shit');
-//   });
-// });
+};

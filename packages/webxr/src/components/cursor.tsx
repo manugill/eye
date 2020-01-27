@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-export const cursor = new THREE.Vector3(0, 0, -0.75)
+export const cursor = new THREE.Vector3(0, 0, -0.5)
 const sizer = 1000 // just an arbitrary number that seems ok in speed
 
 export const eventToZ = (event: React.WheelEvent<any>) => {

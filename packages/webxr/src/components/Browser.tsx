@@ -1,21 +1,19 @@
 import * as THREE from 'three'
 import React, { useState, useRef, useCallback, useMemo } from 'react'
-import { useThree } from 'react-three-fiber'
+import { useThree, ReactThreeFiber } from 'react-three-fiber'
 import io from 'socket.io-client'
 
-import whiteImg from '../static/whiteImg.png'
+import vrRaycast from './vrRaycast'
 
-const resolution = [1200, 800]
-const size: [number, number] = [0.6, 0.4]
-const adjust = [size[0] / resolution[0], size[1] / resolution[1]]
-
-const mouseCoords = (mesh, e) => {
+const mouseCoords = (mesh, resolution, event) => {
 	if (!mesh) return { type: 'mouseMove', x: 0, y: 0, button: 'left' }
-	const xTrue = e.point.x + mesh.position.x
+	const [w, h] = resolution
+	const { width, height } = mesh.geometry.parameters
+	const e = event
+	const xTrue = e.point.x - mesh.position.x
 	const yTrue = e.point.y - mesh.position.y
-	const x = resolution[0] / 2 + xTrue / adjust[0]
-	const y = resolution[1] / 2 + -yTrue / adjust[1]
-	// console.log('coords', x, y)
+	const x = w / 2 + xTrue / (width / w)
+	const y = h / 2 + -yTrue / (height / h)
 	return {
 		x,
 		y,
@@ -37,21 +35,35 @@ const mouseCoords = (mesh, e) => {
 	}
 }
 
-const Browser = () => {
+const Browser = ({
+	url = 'https://github.com',
+	resolution = [1080, 1080],
+	size = [1.08 * 2, 1.08 * 2],
+	meshProps = {},
+}: {
+	url?: string
+	resolution?: [number, number]
+	size?: [number, number]
+	meshProps?: ReactThreeFiber.Object3DNode<THREE.Mesh, typeof THREE.Mesh>
+}) => {
 	const context = useThree()
-	const { mouse } = context
-	console.log('context', mouse, context)
+	console.log('context', context)
 
 	const meshRef = useRef()
 	const mesh = meshRef.current as any
-	const [currentMaterial, setMaterial] = useState<any>()
 
-	const socket = useMemo(() => io('http://localhost:3001'), [])
+	const propDeps = [url, resolution[0], resolution[1]]
+	const socket = useMemo(
+		() =>
+			io('http://localhost:3001', {
+				query: `width=${resolution[0]}&height=${resolution[1]}&url=${url}`,
+			}),
+		[],
+	)
 
 	const materialRef = useCallback(material => {
-		if (currentMaterial !== undefined) return
+		if (!material) return
 		console.log('actualling creating material')
-		setMaterial(material)
 
 		const mesh = material.parent
 		console.log('material', material)
@@ -65,29 +77,19 @@ const Browser = () => {
 				socket.on('paint', ({ time, buffer, rect }) => {
 					const receivedTime = Date.now()
 
-					// bitmap
-					// bitmap doesn't work on macOS
-					// const arr =  new Uint8ClampedArray(buffer)
-					// console.log('- clamped', arr)
-					// const imageData = new ImageData(arr, rect.width, rect.height)
-					// const tNew = new THREE.CanvasTexture(imageData)
-					// const p = new THREE.Vector2(rect.x, mesh.geometry.parameters.height -(rect.y + rect.height))
-					// // context.gl.copyTextureToTexture(p, tNew, texture)
-					// material.setValues({ map: tNew })
-					//
-					// png or jpeg
+					const p = new THREE.Vector2(
+						rect.x,
+						resolution[1] - (rect.y + rect.height),
+					)
+
+					// the server returns a jpeg
 					const url = URL.createObjectURL(
 						new Blob([buffer], { type: 'image/jpeg' }),
 					)
-
 					let img = new Image()
 					img.onload = () => {
 						const loadedTime = Date.now()
 						const textureNew = new THREE.CanvasTexture(img)
-						const p = new THREE.Vector2(
-							rect.x,
-							resolution[1] - (rect.y + rect.height),
-						)
 						context.gl.copyTextureToTexture(p, textureNew, texture)
 					}
 					img.src = url
@@ -102,91 +104,55 @@ const Browser = () => {
 		material.setValues({ map: texture })
 	}, [])
 
-	// const raycast = useMemo(() => {
-	// 	if (!context) return undefined
-
-	// 	// const camera = vr
-	// 	// 	? context.gl.xr.getCamera(context.camera).cameras[1]
-	// 	// 	: context.camera
-	// 	// let raycaster = new THREE.Raycaster()
-
-	// 	console.log('oh yeah, got camera!')
-	// 	return function(
-	// 		_: THREE.Raycaster,
-	// 		intersects: THREE.Intersection[],
-	// 	): void {
-	// 		if (!vr) {
-	// 			raycaster.setFromCamera(mouse, camera)
-	// 			const rc = this.constructor.prototype.raycast.bind(this)
-	// 			if (rc) rc(raycaster, intersects)
-	// 		} else {
-	// 			const { domElement } = context.gl
-	// 			var rW = camera.viewport.z / domElement.width
-	// 			var rH = camera.viewport.w / domElement.height
-	// 			var rX = camera.viewport.x / domElement.height
-	// 			var rY = camera.viewport.y / domElement.height
-	// 			// mouse.x = (x / WIDTH) * 2 - 1
-	// 			// mouse.y = -(y / HEIGHT) * 2 + 1
-	// 			console.log('ratios', rW, rH, rX, rY, camera.viewport)
-	// 			console.log('adjusted x', mouse.x, mouse.x / 0.5 + 1)
-	// 			console.log('adjusted y', mouse.y, mouse.y / 1)
-	// 			mouse.setX(mouse.x / 0.5 + 1)
-
-	// 			raycaster.setFromCamera(mouse, camera)
-	// 			const rc = this.constructor.prototype.raycast.bind(this)
-	// 			// console.log('rc', mouse, raycaster)
-	// 			if (rc) rc(raycaster, intersects)
-	// 		}
-	// 	}
-	// }, [!!context, vr])
+	const raycast = useMemo(() => vrRaycast(context), [context])
 
 	return (
 		<>
 			<mesh
+				{...meshProps}
 				ref={meshRef}
-				// raycast={raycast}
-				position={[0, 1, -1]}
-				onPointerMove={e => {
+				raycast={raycast}
+				onPointerMove={event => {
 					socket.emit('event', {
 						type: 'mouseMove',
-						...mouseCoords(mesh, e),
+						...mouseCoords(mesh, resolution, event),
 					})
 				}}
-				onPointerDown={e => {
+				onPointerDown={event => {
+					console.log('event', event)
 					socket.emit('event', {
 						type: 'mouseDown',
-						...mouseCoords(mesh, e),
+						...mouseCoords(mesh, resolution, event),
 					})
 				}}
-				onPointerUp={e => {
-					socket.emit('event', { type: 'mouseUp', ...mouseCoords(mesh, e) })
+				onPointerUp={event => {
+					socket.emit('event', {
+						type: 'mouseUp',
+						...mouseCoords(mesh, resolution, event),
+					})
 				}}
-				onPointerOut={e => {
+				onPointerOut={event => {
 					socket.emit('event', {
 						type: 'mouseLeave',
-						...mouseCoords(mesh, e),
+						...mouseCoords(mesh, resolution, event),
 					})
 				}}
-				onPointerOver={e => {
+				onPointerOver={event => {
 					socket.emit('event', {
 						type: 'mouseEnter',
-						...mouseCoords(mesh, e),
+						...mouseCoords(mesh, resolution, event),
 					})
 				}}
-				onWheel={e => {
+				onWheel={event => {
 					socket.emit('event', {
 						type: 'mouseWheel',
-						...mouseCoords(mesh, e),
-						deltaX: (e as any).deltaX,
-						deltaY: (e as any).deltaY,
+						...mouseCoords(mesh, resolution, event),
+						deltaX: (event as any).deltaX,
+						deltaY: (event as any).deltaY,
 					})
 				}}>
 				<planeGeometry attach='geometry' args={size} />
-				<meshBasicMaterial
-					attach='material'
-					ref={materialRef}
-					color={new THREE.Color('white')}
-				/>
+				<meshBasicMaterial attach='material' ref={materialRef} color='white' />
 			</mesh>
 		</>
 	)

@@ -25,11 +25,13 @@ export default function App() {
 					context.events.onWheel(event)
 				}
 			}}
-			onPointerMove={event => {
+			onPointerDown={event => {
 				if (!context) return
 				event.persist()
-				context.events.onPointerMove(event)
-				eventToXY(event)
+				context.events.onPointerDown(event)
+				if (context.gl.xr.isPresenting) {
+					context.gl.domElement.requestPointerLock()
+				}
 			}}
 			onCreated={context => {
 				setContext(context)
@@ -61,7 +63,23 @@ export default function App() {
 						<>loading...</>
 					</Dom>
 				}>
-				<Browser />
+				<Browser
+					{...{
+						url: 'https://about.google',
+						size: [600, 600],
+						meshProps: {
+							position: [-300, 2, -500],
+						},
+					}}
+				/>
+				<Browser
+					{...{
+						size: [1080, 1080],
+						meshProps: {
+							position: [1, 1, -700],
+						},
+					}}
+				/>
 				<CursorSprite />
 			</Suspense>
 		</Canvas>
