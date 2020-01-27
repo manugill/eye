@@ -56,6 +56,7 @@ const Browser = ({
 	const socket = useMemo(
 		() =>
 			io('http://localhost:3001', {
+				transports: ['websocket', 'polling'],
 				query: `width=${resolution[0]}&height=${resolution[1]}&url=${url}`,
 			}),
 		[],

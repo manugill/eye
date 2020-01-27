@@ -99,7 +99,7 @@ const onConnection = socket => {
     //   Date.now() - paint.time,
     // );
     console.log('paint emitted', rect);
-    socket.emit('paint', paint);
+    socket.volatile.emit('paint', paint);
   });
 
   socket.on('move', () => {
