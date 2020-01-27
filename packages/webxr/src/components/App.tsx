@@ -29,9 +29,17 @@ export default function App() {
 				if (!context) return
 				event.persist()
 				context.events.onPointerDown(event)
-				if (context.gl.xr.isPresenting) {
+				if (context.gl.xr.isPresenting && !document.pointerLockElement) {
+					cursor.setX(0)
+					cursor.setY(0)
 					context.gl.domElement.requestPointerLock()
 				}
+			}}
+			onPointerMove={event => {
+				if (!context) return
+				event.persist()
+				context.events.onPointerMove(event)
+				eventToXY(event)
 			}}
 			onCreated={context => {
 				setContext(context)
@@ -65,18 +73,18 @@ export default function App() {
 				}>
 				<Browser
 					{...{
-						url: 'https://about.google',
-						size: [600, 600],
+						size: [1080, 1080],
 						meshProps: {
-							position: [-300, 2, -500],
+							position: [1, 1, -700],
 						},
 					}}
 				/>
 				<Browser
 					{...{
-						size: [1080, 1080],
+						url: 'https://about.google',
+						size: [600, 600],
 						meshProps: {
-							position: [1, 1, -700],
+							position: [-300, 2, -500],
 						},
 					}}
 				/>
