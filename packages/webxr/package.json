@@ -4,6 +4,7 @@
 	"scripts": {
 		"start": "npm run dev",
 		"dev": "parcel src/index.html -p 3000",
+		"start2": "react-app-rewired start",
 		"build": "parcel build src/index.html -p 3000"
 	},
 	"dependencies": {
@@ -11,14 +12,27 @@
 		"@types/react-dom": "^16.9.5",
 		"@types/socket.io-client": "^1.4.32",
 		"@types/three": "^0.103.2",
+		"customize-cra": "^0.9.1",
+		"customize-cra-react-refresh": "^1.0.1",
 		"lodash": "^4.17.15",
 		"parcel-bundler": "^1.12.4",
 		"react": "^16.12.0",
+		"react-app-rewired": "^2.1.5",
 		"react-dom": "^16.12.0",
+		"react-scripts": "^3.3.0",
 		"react-three-fiber": "^4.0.11",
 		"socket.io-client": "^2.3.0",
 		"three": "^0.112.1"
 	},
+	"devDependencies": {
+		"typescript": "^3.7.5"
+	},
+	"browserslist": [
+		">0.2%",
+		"not dead",
+		"not ie <= 11",
+		"not op_mini all"
+	],
 	"prettier": {
 		"printWidth": 80,
 		"useTabs": true,
@@ -27,16 +41,5 @@
 		"trailingComma": "all",
 		"jsxSingleQuote": true,
 		"jsxBracketSameLine": true
-	},
-	"browserslist": {
-		"production": [
-			"last 1 chrome version"
-		],
-		"development": [
-			"last 1 chrome version"
-		]
-	},
-	"devDependencies": {
-		"typescript": "^3.7.4"
 	}
 }

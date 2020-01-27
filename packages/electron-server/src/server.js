@@ -20,8 +20,11 @@ app.once('ready', () => {
     },
   });
 
-  window.loadURL('https://codepen.io/Danil89/details/EOjMvb');
+  window.loadURL('https://github.com');
   window.webContents.setFrameRate(60);
+  window.webContents.on('did-finish-load', function() {
+    window.webContents.insertCSS('::-webkit-scrollbar { display: none; }');
+  });
 
   console.log('electron window started');
 });

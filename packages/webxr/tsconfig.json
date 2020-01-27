@@ -1,12 +1,29 @@
 {
-	"compilerOptions": {
-		"baseUrl": ".",
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"jsx": "react",
-		"strict": true,
-		"noImplicitAny": false,
-		"noImplicitReturns": true,
-		"noUnusedLocals": true
-	}
+  "compilerOptions": {
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
+    "strict": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": true,
+    "noUnusedLocals": false,
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "isolatedModules": true
+  },
+  "include": [
+    "src"
+  ]
 }

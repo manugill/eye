@@ -55,7 +55,7 @@ const createButton = function(
 				// requestReferenceSpace call will fail if it turns out to be unavailable.
 				// ('local' is always available for immersive sessions and doesn't need to
 				// be requested separately.)
-				navigator.xr
+				;(navigator as any).xr
 					.requestSession('immersive-vr', sessionInit)
 					.then(onSessionStarted)
 			}
@@ -109,10 +109,11 @@ const createButton = function(
 		button.style.display = 'none'
 
 		stylizeElement(button)
-
-		navigator.xr.isSessionSupported('immersive-vr').then(function(supported) {
-			supported ? showEnterVR() : showWebXRNotFound()
-		})
+		;(navigator as any).xr
+			.isSessionSupported('immersive-vr')
+			.then(function(supported) {
+				supported ? showEnterVR() : showWebXRNotFound()
+			})
 
 		return button
 	} else {

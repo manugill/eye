@@ -31730,7 +31730,54 @@ if ("development" === 'production') {
 } else {
   module.exports = require('./cjs/react-dom.development.js');
 }
-},{"./cjs/react-dom.development.js":"../node_modules/react-dom/cjs/react-dom.development.js"}],"../node_modules/three/build/three.module.js":[function(require,module,exports) {
+},{"./cjs/react-dom.development.js":"../node_modules/react-dom/cjs/react-dom.development.js"}],"../node_modules/@babel/runtime/helpers/esm/extends.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = _extends;
+
+function _extends() {
+  exports.default = _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}
+},{}],"../node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = _objectWithoutPropertiesLoose;
+
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+
+  return target;
+}
+},{}],"../node_modules/three/build/three.module.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -40234,8 +40281,7 @@ Mesh.prototype = Object.assign(Object.create(Object3D.prototype), {
           intersects.push(intersection);
         }
       }
-    } // console.log('intersects', intersects)
-
+    }
   },
   clone: function () {
     return new this.constructor(this.geometry, this.material).copy(this);
@@ -48370,12 +48416,10 @@ function WebXRManager(renderer, gl) {
 
   function setProjectionFromUnion(camera, cameraL, cameraR) {
     cameraLPos.setFromMatrixPosition(cameraL.matrixWorld);
-    cameraRPos.setFromMatrixPosition(cameraR.matrixWorld); // console.log('  - setProjectionFromUnion', camera, cameraL, cameraR, cameraLPos, cameraRPos)
-
+    cameraRPos.setFromMatrixPosition(cameraR.matrixWorld);
     var ipd = cameraLPos.distanceTo(cameraRPos);
     var projL = cameraL.projectionMatrix.elements;
-    var projR = cameraR.projectionMatrix.elements; // console.log('  - ipd, proj', ipd, projL, projR)
-    // VR systems will have identical far and near planes, and
+    var projR = cameraR.projectionMatrix.elements; // VR systems will have identical far and near planes, and
     // most likely identical top and bottom frustum extents.
     // Use the left camera for these values.
 
@@ -66904,53 +66948,6 @@ if (typeof __THREE_DEVTOOLS__ !== 'undefined') {
   }));
   /* eslint-enable no-undef */
 
-}
-},{}],"../node_modules/@babel/runtime/helpers/esm/extends.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = _extends;
-
-function _extends() {
-  exports.default = _extends = Object.assign || function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-
-    return target;
-  };
-
-  return _extends.apply(this, arguments);
-}
-},{}],"../node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = _objectWithoutPropertiesLoose;
-
-function _objectWithoutPropertiesLoose(source, excluded) {
-  if (source == null) return {};
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key, i;
-
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue;
-    target[key] = source[key];
-  }
-
-  return target;
 }
 },{}],"../node_modules/react-reconciler/cjs/react-reconciler.development.js":[function(require,module,exports) {
 /** @license React v0.24.0
@@ -95864,7 +95861,347 @@ exports.connect = lookup;
 exports.Manager = require('./manager');
 exports.Socket = require('./socket');
 
-},{"./url":"../node_modules/socket.io-client/lib/url.js","socket.io-parser":"../node_modules/socket.io-parser/index.js","./manager":"../node_modules/socket.io-client/lib/manager.js","debug":"../node_modules/debug/src/browser.js","./socket":"../node_modules/socket.io-client/lib/socket.js"}],"components/createButton.tsx":[function(require,module,exports) {
+},{"./url":"../node_modules/socket.io-client/lib/url.js","socket.io-parser":"../node_modules/socket.io-parser/index.js","./manager":"../node_modules/socket.io-client/lib/manager.js","debug":"../node_modules/debug/src/browser.js","./socket":"../node_modules/socket.io-client/lib/socket.js"}],"components/Browser.tsx":[function(require,module,exports) {
+"use strict";
+
+var __assign = this && this.__assign || function () {
+  __assign = Object.assign || function (t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+      s = arguments[i];
+
+      for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+    }
+
+    return t;
+  };
+
+  return __assign.apply(this, arguments);
+};
+
+var __importStar = this && this.__importStar || function (mod) {
+  if (mod && mod.__esModule) return mod;
+  var result = {};
+  if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+  result["default"] = mod;
+  return result;
+};
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var THREE = __importStar(require("three"));
+
+var react_1 = __importStar(require("react"));
+
+var react_three_fiber_1 = require("react-three-fiber");
+
+var socket_io_client_1 = __importDefault(require("socket.io-client"));
+
+var resolution = [1200, 800];
+var size = [0.6, 0.4];
+var adjust = [size[0] / resolution[0], size[1] / resolution[1]];
+
+var mouseCoords = function (mesh, e) {
+  if (!mesh) return {
+    type: 'mouseMove',
+    x: 0,
+    y: 0,
+    button: 'left'
+  };
+  var xTrue = e.point.x + mesh.position.x;
+  var yTrue = e.point.y - mesh.position.y;
+  var x = resolution[0] / 2 + xTrue / adjust[0];
+  var y = resolution[1] / 2 + -yTrue / adjust[1]; // console.log('coords', x, y)
+
+  return {
+    x: x,
+    y: y,
+    globalX: x,
+    globalY: y,
+    movementX: e.movementX,
+    movementY: e.movementY,
+    deltaX: e.deltaX,
+    deltaY: e.deltaY,
+    wheelTicksX: e.wheelTicksX,
+    wheelTicksY: e.wheelTicksY,
+    accelerationRatioX: 1,
+    accelerationRatioY: 1,
+    hasPreciseScrollingDeltas: true,
+    canScroll: true,
+    clickCount: 1,
+    button: e.button === 1 ? 'middle' : e.button === 2 ? 'right' : 'left',
+    time: Date.now()
+  };
+};
+
+var Browser = function () {
+  var context = react_three_fiber_1.useThree();
+  var mouse = context.mouse;
+  console.log('context', mouse, context);
+  var meshRef = react_1.useRef();
+  var mesh = meshRef.current;
+
+  var _a = react_1.useState(),
+      currentMaterial = _a[0],
+      setMaterial = _a[1];
+
+  var socket = react_1.useMemo(function () {
+    return socket_io_client_1.default('http://localhost:3001');
+  }, []);
+  var materialRef = react_1.useCallback(function (material) {
+    if (currentMaterial !== undefined) return;
+    console.log('actualling creating material');
+    setMaterial(material);
+    var mesh = material.parent;
+    console.log('material', material); // an image texture has to be loaded to use copyTextureToTexture
+    // may be a data texture works too but I didn't know how to use it
+
+    var loader = new THREE.TextureLoader();
+    var texture = loader.load("https://images.unsplash.com/source-404?fit=crop&fm=jpg&q=60&w=" + resolution[0] + "&h=" + resolution[1], function (texture) {
+      socket.on('paint', function (_a) {
+        var time = _a.time,
+            buffer = _a.buffer,
+            rect = _a.rect;
+        var receivedTime = Date.now(); // bitmap
+        // bitmap doesn't work on macOS
+        // const arr =  new Uint8ClampedArray(buffer)
+        // console.log('- clamped', arr)
+        // const imageData = new ImageData(arr, rect.width, rect.height)
+        // const tNew = new THREE.CanvasTexture(imageData)
+        // const p = new THREE.Vector2(rect.x, mesh.geometry.parameters.height -(rect.y + rect.height))
+        // // context.gl.copyTextureToTexture(p, tNew, texture)
+        // material.setValues({ map: tNew })
+        //
+        // png or jpeg
+
+        var url = URL.createObjectURL(new Blob([buffer], {
+          type: 'image/jpeg'
+        }));
+        var img = new Image();
+
+        img.onload = function () {
+          var loadedTime = Date.now();
+          var textureNew = new THREE.CanvasTexture(img);
+          var p = new THREE.Vector2(rect.x, resolution[1] - (rect.y + rect.height));
+          context.gl.copyTextureToTexture(p, textureNew, texture);
+        };
+
+        img.src = url;
+      });
+      setTimeout(function () {
+        return socket.emit('move');
+      }, 500);
+      texture.minFilter = THREE.LinearFilter;
+      texture.generateMipmaps = false;
+    });
+    material.setValues({
+      map: texture
+    });
+  }, []); // const raycast = useMemo(() => {
+  // 	if (!context) return undefined
+  // 	// const camera = vr
+  // 	// 	? context.gl.xr.getCamera(context.camera).cameras[1]
+  // 	// 	: context.camera
+  // 	// let raycaster = new THREE.Raycaster()
+  // 	console.log('oh yeah, got camera!')
+  // 	return function(
+  // 		_: THREE.Raycaster,
+  // 		intersects: THREE.Intersection[],
+  // 	): void {
+  // 		if (!vr) {
+  // 			raycaster.setFromCamera(mouse, camera)
+  // 			const rc = this.constructor.prototype.raycast.bind(this)
+  // 			if (rc) rc(raycaster, intersects)
+  // 		} else {
+  // 			const { domElement } = context.gl
+  // 			var rW = camera.viewport.z / domElement.width
+  // 			var rH = camera.viewport.w / domElement.height
+  // 			var rX = camera.viewport.x / domElement.height
+  // 			var rY = camera.viewport.y / domElement.height
+  // 			// mouse.x = (x / WIDTH) * 2 - 1
+  // 			// mouse.y = -(y / HEIGHT) * 2 + 1
+  // 			console.log('ratios', rW, rH, rX, rY, camera.viewport)
+  // 			console.log('adjusted x', mouse.x, mouse.x / 0.5 + 1)
+  // 			console.log('adjusted y', mouse.y, mouse.y / 1)
+  // 			mouse.setX(mouse.x / 0.5 + 1)
+  // 			raycaster.setFromCamera(mouse, camera)
+  // 			const rc = this.constructor.prototype.raycast.bind(this)
+  // 			// console.log('rc', mouse, raycaster)
+  // 			if (rc) rc(raycaster, intersects)
+  // 		}
+  // 	}
+  // }, [!!context, vr])
+
+  return react_1.default.createElement(react_1.default.Fragment, null, react_1.default.createElement("mesh", {
+    ref: meshRef,
+    // raycast={raycast}
+    position: [0, 1, -1],
+    onPointerMove: function (e) {
+      socket.emit('event', __assign({
+        type: 'mouseMove'
+      }, mouseCoords(mesh, e)));
+    },
+    onPointerDown: function (e) {
+      socket.emit('event', __assign({
+        type: 'mouseDown'
+      }, mouseCoords(mesh, e)));
+    },
+    onPointerUp: function (e) {
+      socket.emit('event', __assign({
+        type: 'mouseUp'
+      }, mouseCoords(mesh, e)));
+    },
+    onPointerOut: function (e) {
+      socket.emit('event', __assign({
+        type: 'mouseLeave'
+      }, mouseCoords(mesh, e)));
+    },
+    onPointerOver: function (e) {
+      socket.emit('event', __assign({
+        type: 'mouseEnter'
+      }, mouseCoords(mesh, e)));
+    },
+    onWheel: function (e) {
+      socket.emit('event', __assign(__assign({
+        type: 'mouseWheel'
+      }, mouseCoords(mesh, e)), {
+        deltaX: e.deltaX,
+        deltaY: e.deltaY
+      }));
+    }
+  }, react_1.default.createElement("planeGeometry", {
+    attach: 'geometry',
+    args: size
+  }), react_1.default.createElement("meshBasicMaterial", {
+    attach: 'material',
+    ref: materialRef,
+    color: new THREE.Color('white')
+  })));
+};
+
+exports.default = Browser;
+},{"three":"../node_modules/three/build/three.module.js","react":"../node_modules/react/index.js","react-three-fiber":"../node_modules/react-three-fiber/web.js","socket.io-client":"../node_modules/socket.io-client/lib/index.js"}],"components/cursor.tsx":[function(require,module,exports) {
+"use strict";
+
+var __importStar = this && this.__importStar || function (mod) {
+  if (mod && mod.__esModule) return mod;
+  var result = {};
+  if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+  result["default"] = mod;
+  return result;
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var THREE = __importStar(require("three"));
+
+exports.cursor = new THREE.Vector3(0, 0, -0.75);
+var sizer = 1000; // just an arbitrary number that seems ok in speed
+
+exports.eventToZ = function (event) {
+  var newZ = exports.cursor.z + event.deltaY / sizer;
+  exports.cursor.setZ(newZ);
+};
+
+exports.eventToXY = function (event) {
+  // we can't rely on the current clientX/Y  mouse location cause pointer can be locked
+  // we get the mouse x/y (-1 to 1) from three's context
+  // and convert it to pixels same values as clientX/Y
+  var pixelX = (exports.cursor.x + 1) * sizer;
+  var pixelY = (exports.cursor.y + 1) * sizer;
+  var movedPixelX = pixelX + event.movementX;
+  var movedPixelY = pixelY - event.movementY;
+  exports.cursor.setX(movedPixelX / sizer - 1);
+  exports.cursor.setY(movedPixelY / sizer - 1);
+};
+},{"three":"../node_modules/three/build/three.module.js"}],"static/redball.png":[function(require,module,exports) {
+module.exports = "/redball.617c5013.png";
+},{}],"components/CursorSprite.tsx":[function(require,module,exports) {
+"use strict";
+
+var __importStar = this && this.__importStar || function (mod) {
+  if (mod && mod.__esModule) return mod;
+  var result = {};
+  if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+  result["default"] = mod;
+  return result;
+};
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var THREE = __importStar(require("three"));
+
+var react_1 = __importStar(require("react"));
+
+var react_three_fiber_1 = require("react-three-fiber");
+
+var cursor_1 = require("./cursor");
+
+var redball_png_1 = __importDefault(require("../static/redball.png"));
+
+var CursorSprite = function () {
+  var context = react_three_fiber_1.useThree();
+  var texture = react_three_fiber_1.useLoader(THREE.TextureLoader, redball_png_1.default);
+  var spriteRef = react_1.useRef();
+  var geometryRef = react_1.useRef();
+  react_three_fiber_1.useFrame(function () {
+    // console.log('cursor', cursor.x, cursor.y, cursor.z)
+    if (spriteRef.current) {
+      var sprite = spriteRef.current;
+      sprite.position.x = cursor_1.cursor.x;
+      sprite.position.y = cursor_1.cursor.y;
+      sprite.position.z = cursor_1.cursor.z;
+      sprite.needsUpdate = true;
+    }
+
+    if (geometryRef.current) {
+      var isXr = context.gl.xr.isPresenting;
+      var camera = isXr ? context.gl.xr.getCamera(context.camera) : context.camera;
+      var cameraL = isXr ? camera.cameras[0] : camera; // console.log('camera', camera.position, cameraL.position)
+
+      var geometry = geometryRef.current;
+      geometry.vertices[0].set(camera.position.x, camera.position.y, camera.position.z);
+      geometry.vertices[1] = cursor_1.cursor;
+      geometry.vertices[2].set(cursor_1.cursor.x - camera.position.x, cursor_1.cursor.y, cursor_1.cursor.z - camera.position.z);
+      console.log('geometry', camera.position, cursor_1.cursor, geometry.vertices[2]);
+      geometry.verticesNeedUpdate = true;
+    }
+  });
+  return react_1.default.createElement(react_1.default.Fragment, null, react_1.default.createElement("sprite", {
+    ref: spriteRef,
+    scale: [0.1, 0.1]
+  }, react_1.default.createElement("spriteMaterial", {
+    attach: 'material',
+    map: texture
+  })), react_1.default.createElement("line", null, react_1.default.createElement("geometry", {
+    attach: 'geometry',
+    vertices: [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0)],
+    ref: geometryRef
+  }), react_1.default.createElement("lineBasicMaterial", {
+    attach: 'material',
+    color: new THREE.Color('white')
+  })));
+};
+
+exports.default = CursorSprite;
+},{"three":"../node_modules/three/build/three.module.js","react":"../node_modules/react/index.js","react-three-fiber":"../node_modules/react-three-fiber/web.js","./cursor":"components/cursor.tsx","../static/redball.png":"static/redball.png"}],"components/createButton.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -95996,35 +96333,8 @@ var createButton = function (renderer, sessionCallback) {
 };
 
 exports.default = createButton;
-},{}],"static/redball.png":[function(require,module,exports) {
-module.exports = "/redball.617c5013.png";
 },{}],"components/App.tsx":[function(require,module,exports) {
 "use strict";
-
-var __assign = this && this.__assign || function () {
-  __assign = Object.assign || function (t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-      s = arguments[i];
-
-      for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-    }
-
-    return t;
-  };
-
-  return __assign.apply(this, arguments);
-};
-
-var __rest = this && this.__rest || function (s, e) {
-  var t = {};
-
-  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
-
-  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
-  }
-  return t;
-};
 
 var __importStar = this && this.__importStar || function (mod) {
   if (mod && mod.__esModule) return mod;
@@ -96044,230 +96354,60 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var THREE = __importStar(require("three"));
-
 var react_1 = __importStar(require("react"));
 
 var react_three_fiber_1 = require("react-three-fiber");
 
-var socket_io_client_1 = __importDefault(require("socket.io-client"));
+var Browser_1 = __importDefault(require("./Browser"));
+
+var CursorSprite_1 = __importDefault(require("./CursorSprite"));
 
 var createButton_1 = __importDefault(require("./createButton"));
 
-var redball_png_1 = __importDefault(require("../static/redball.png"));
-
-function Sprite(_a) {
-  var url = _a.url,
-      props = __rest(_a, ["url"]);
-
-  var texture = react_three_fiber_1.useLoader(THREE.TextureLoader, url);
-  console.log('props', props);
-  return react_1.default.createElement("sprite", __assign({
-    scale: [1, 1],
-    position: [0, 0, -10]
-  }, props), react_1.default.createElement("spriteMaterial", {
-    attach: 'material',
-    map: texture
-  }));
-}
-
-var mouseCoords = function (mesh, e) {
-  if (!mesh) return {
-    type: 'mouseMove',
-    x: 0,
-    y: 0,
-    button: 'left'
-  };
-  var x = mesh.geometry.parameters.width / 2 + e.point.x;
-  var y = mesh.geometry.parameters.height / 2 + -e.point.y; // console.log('coords', e.point, mesh)
-
-  return {
-    x: x,
-    y: y,
-    globalX: x,
-    globalY: y,
-    movementX: e.movementX,
-    movementY: e.movementY,
-    deltaX: e.deltaX,
-    deltaY: e.deltaY,
-    wheelTicksX: e.wheelTicksX,
-    wheelTicksY: e.wheelTicksY,
-    accelerationRatioX: 1,
-    accelerationRatioY: 1,
-    hasPreciseScrollingDeltas: true,
-    canScroll: true,
-    clickCount: 1,
-    button: e.button === 1 ? 'middle' : e.button === 2 ? 'right' : 'left',
-    time: Date.now()
-  };
-};
-
-function Browser() {
-  var context = react_three_fiber_1.useThree();
-  var mouse = context.mouse;
-  console.log('context', context);
-  var meshRef = react_1.useRef();
-  var mesh = meshRef.current;
-
-  var _a = react_1.useState(),
-      currentMaterial = _a[0],
-      setMaterial = _a[1];
-
-  var socket = react_1.useMemo(function () {
-    return socket_io_client_1.default('http://localhost:3001');
-  }, []);
-  var materialRef = react_1.useCallback(function (material) {
-    if (currentMaterial !== undefined) return;
-    console.log('actualling creating material');
-    setMaterial(material);
-    var mesh = material.parent;
-    console.log('material', material);
-    var loader = new THREE.TextureLoader();
-    var texture = loader.load('https://source.unsplash.com/daily/1200x800', function (texture) {
-      socket.on('paint', function (_a) {
-        var time = _a.time,
-            buffer = _a.buffer,
-            rect = _a.rect;
-        var receivedTime = Date.now(); // bitmap
-        // bitmap doesn't work on macOS
-        // const arr =  new Uint8ClampedArray(buffer)
-        // console.log('- clamped', arr)
-        // const imageData = new ImageData(arr, rect.width, rect.height)
-        // const tNew = new THREE.CanvasTexture(imageData)
-        // const p = new THREE.Vector2(rect.x, mesh.geometry.parameters.height -(rect.y + rect.height))
-        // // context.gl.copyTextureToTexture(p, tNew, texture)
-        // material.setValues({ map: tNew })
-        //
-        // png or jpeg
-
-        var url = URL.createObjectURL(new Blob([buffer], {
-          type: 'image/jpeg'
-        }));
-        var img = new Image();
-
-        img.onload = function () {
-          var loadedTime = Date.now();
-          var textureNew = new THREE.CanvasTexture(img);
-          var p = new THREE.Vector2(rect.x, mesh.geometry.parameters.height - (rect.y + rect.height));
-          context.gl.copyTextureToTexture(p, textureNew, texture);
-          console.log('time diff', receivedTime - time, loadedTime - time, Date.now() - time, Date.now() - receivedTime, Date.now() - loadedTime);
-        };
-
-        img.src = url;
-      });
-      setTimeout(function () {
-        return socket.emit('move');
-      }, 500);
-      texture.minFilter = THREE.LinearFilter;
-      texture.generateMipmaps = false;
-    });
-    material.setValues({
-      map: texture
-    });
-  }, []); // const raycast = useMemo(() => {
-  // 	if (!context) return undefined
-  // 	// const camera = vr
-  // 	// 	? context.gl.xr.getCamera(context.camera).cameras[1]
-  // 	// 	: context.camera
-  // 	// let raycaster = new THREE.Raycaster()
-  // 	console.log('oh yeah, got camera!')
-  // 	return function(
-  // 		_: THREE.Raycaster,
-  // 		intersects: THREE.Intersection[],
-  // 	): void {
-  // 		if (!vr) {
-  // 			raycaster.setFromCamera(mouse, camera)
-  // 			const rc = this.constructor.prototype.raycast.bind(this)
-  // 			if (rc) rc(raycaster, intersects)
-  // 		} else {
-  // 			const { domElement } = context.gl
-  // 			var rW = camera.viewport.z / domElement.width
-  // 			var rH = camera.viewport.w / domElement.height
-  // 			var rX = camera.viewport.x / domElement.height
-  // 			var rY = camera.viewport.y / domElement.height
-  // 			// mouse.x = (x / WIDTH) * 2 - 1
-  // 			// mouse.y = -(y / HEIGHT) * 2 + 1
-  // 			console.log('ratios', rW, rH, rX, rY, camera.viewport)
-  // 			console.log('adjusted x', mouse.x, mouse.x / 0.5 + 1)
-  // 			console.log('adjusted y', mouse.y, mouse.y / 1)
-  // 			mouse.setX(mouse.x / 0.5 + 1)
-  // 			raycaster.setFromCamera(mouse, camera)
-  // 			const rc = this.constructor.prototype.raycast.bind(this)
-  // 			// console.log('rc', mouse, raycaster)
-  // 			if (rc) rc(raycaster, intersects)
-  // 		}
-  // 	}
-  // }, [!!context, vr])
-
-  return react_1.default.createElement(react_1.default.Fragment, null, react_1.default.createElement("mesh", {
-    ref: meshRef,
-    // raycast={raycast}
-    position: [0, 0, -600],
-    onPointerMove: function (e) {
-      socket.emit('event', __assign({
-        type: 'mouseMove'
-      }, mouseCoords(mesh, e)));
-    },
-    onPointerDown: function (e) {
-      socket.emit('event', __assign({
-        type: 'mouseDown'
-      }, mouseCoords(mesh, e)));
-    },
-    onPointerUp: function (e) {
-      socket.emit('event', __assign({
-        type: 'mouseUp'
-      }, mouseCoords(mesh, e)));
-    },
-    onPointerOut: function (e) {
-      socket.emit('event', __assign({
-        type: 'mouseLeave'
-      }, mouseCoords(mesh, e)));
-    },
-    onPointerOver: function (e) {
-      socket.emit('event', __assign({
-        type: 'mouseEnter'
-      }, mouseCoords(mesh, e)));
-    },
-    onWheel: function (e) {
-      socket.emit('event', __assign(__assign({
-        type: 'mouseWheel'
-      }, mouseCoords(mesh, e)), {
-        deltaX: e.deltaX,
-        deltaY: e.deltaY
-      }));
-    }
-  }, react_1.default.createElement("planeGeometry", {
-    attach: 'geometry',
-    args: [1200, 800]
-  }), react_1.default.createElement("meshBasicMaterial", {
-    ref: materialRef,
-    color: new THREE.Color('white'),
-    attach: 'material'
-  })));
-}
+var cursor_1 = require("./cursor");
 
 function App() {
-  var mouse = react_three_fiber_1.useThree().mouse;
+  var _a = react_1.useState(),
+      context = _a[0],
+      setContext = _a[1];
 
-  var _a = react_1.useState(null),
-      xr = _a[0],
-      setXr = _a[1];
-
-  var updateMousePosition = function () {};
+  var _b = react_1.useState(),
+      xr = _b[0],
+      setXr = _b[1];
 
   return react_1.default.createElement(react_three_fiber_1.Canvas, {
     vr: true,
+    onWheel: function (event) {
+      if (!context) return;
+      event.persist();
+
+      if (event.shiftKey) {
+        // move the cursor in z when scrolling with shift
+        cursor_1.eventToZ(event);
+      } else {
+        // otherwise, fire other onWheel events
+        context.events.onWheel(event);
+      }
+    },
+    onPointerMove: function (event) {
+      if (!context) return;
+      event.persist();
+      context.events.onPointerMove(event);
+      cursor_1.eventToXY(event);
+    },
     onCreated: function (context) {
+      setContext(context);
+
       var sessionCallback = function (session) {
+        cursor_1.cursor.setX(0);
+        cursor_1.cursor.setY(0);
         console.log('session', session, context);
 
-        if (context) {
-          if (session) {
-            context.gl.domElement.requestPointerLock();
-          } else {
-            ;
-            document.exitPointerLock();
-          }
+        if (session) {
+          context.gl.domElement.requestPointerLock();
+        } else {
+          ;
+          document.exitPointerLock();
         }
 
         setXr(session);
@@ -96283,15 +96423,13 @@ function App() {
     angle: 0.2,
     penumbra: 1,
     castShadow: true
-  }), react_1.default.createElement(Browser, null), react_1.default.createElement(react_1.Suspense, {
+  }), react_1.default.createElement(react_1.Suspense, {
     fallback: react_1.default.createElement(react_three_fiber_1.Dom, null, "loading...")
-  }, react_1.default.createElement(Sprite, {
-    url: redball_png_1.default
-  })));
+  }, react_1.default.createElement(Browser_1.default, null), react_1.default.createElement(CursorSprite_1.default, null)));
 }
 
 exports.default = App;
-},{"three":"../node_modules/three/build/three.module.js","react":"../node_modules/react/index.js","react-three-fiber":"../node_modules/react-three-fiber/web.js","socket.io-client":"../node_modules/socket.io-client/lib/index.js","./createButton":"components/createButton.tsx","../static/redball.png":"static/redball.png"}],"index.tsx":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-three-fiber":"../node_modules/react-three-fiber/web.js","./Browser":"components/Browser.tsx","./CursorSprite":"components/CursorSprite.tsx","./createButton":"components/createButton.tsx","./cursor":"components/cursor.tsx"}],"index.tsx":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -96340,7 +96478,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55105" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56856" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
