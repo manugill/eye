@@ -3,9 +3,34 @@ import React, { useState, useRef, useCallback, useMemo } from 'react'
 import { useThree, ReactThreeFiber } from 'react-three-fiber'
 import io from 'socket.io-client'
 
-import vrRaycast from './vrRaycast'
+import vrRaycast, { isClosest } from './vrRaycast'
 
-const mouseCoords = (mesh, resolution, event) => {
+const keyboardEvent = event => {
+	const keyFilter = ['Control', 'Shift', 'Alt', 'Meta', 'Command']
+	const keys = [
+		event.ctrlKey && 'Control',
+		event.shiftKey && 'Shift',
+		event.altKey && 'Alt',
+		event.metaKey && 'Command',
+		keyFilter.some(k => k === event.key)
+			? undefined
+			: event.key.startsWith('Arrow')
+			? event.key.substr(5)
+			: event.key,
+	].filter(k => !!k)
+	return {
+		keyCode: keys.join('+'),
+
+		type:
+			event.type === 'keyup'
+				? 'keyUp'
+				: event.type === 'keydown'
+				? 'keyDown'
+				: 'char',
+	}
+}
+
+const mouseEvent = (mesh, resolution, event) => {
 	if (!mesh) return { type: 'mouseMove', x: 0, y: 0, button: 'left' }
 	const [w, h] = resolution
 	const { width, height } = mesh.geometry.parameters
@@ -96,7 +121,9 @@ const Browser = ({
 					img.src = url
 				})
 
+				socket.emit('move')
 				setTimeout(() => socket.emit('move'), 500)
+				setTimeout(() => socket.emit('move'), 100)
 
 				texture.minFilter = THREE.LinearFilter
 				texture.generateMipmaps = false
@@ -105,49 +132,74 @@ const Browser = ({
 		material.setValues({ map: texture })
 	}, [])
 
+	const onKeyDown = useCallback(event => {
+		const keyEvent = keyboardEvent(event)
+		console.log('onKeyDown 2', keyEvent, mesh)
+		socket.emit('event', keyEvent)
+		if (keyEvent.keyCode.length === 1)
+			socket.emit('event', {
+				...keyEvent,
+				type: 'char',
+			})
+	}, [])
+	const onKeyUp = useCallback(event => {
+		const keyEvent = keyboardEvent(event)
+		console.log('onKeyUp 2', keyEvent, mesh)
+		socket.emit('event', keyEvent)
+	}, [])
+
 	const raycast = useMemo(() => vrRaycast(context), [context])
 
 	return (
 		<>
 			<mesh
 				{...meshProps}
+				userData={{ onKeyDown, onKeyUp }}
+				onKeyDown={onKeyDown}
+				onKeyUp={onKeyUp}
 				ref={meshRef}
 				raycast={raycast}
 				onPointerMove={event => {
+					if (!isClosest(mesh)) return
 					socket.emit('event', {
 						type: 'mouseMove',
-						...mouseCoords(mesh, resolution, event),
+						...mouseEvent(mesh, resolution, event),
 					})
 				}}
 				onPointerDown={event => {
+					if (!isClosest(mesh)) return
 					console.log('event', event)
 					socket.emit('event', {
 						type: 'mouseDown',
-						...mouseCoords(mesh, resolution, event),
+						...mouseEvent(mesh, resolution, event),
 					})
 				}}
 				onPointerUp={event => {
+					if (!isClosest(mesh)) return
 					socket.emit('event', {
 						type: 'mouseUp',
-						...mouseCoords(mesh, resolution, event),
+						...mouseEvent(mesh, resolution, event),
 					})
 				}}
 				onPointerOut={event => {
+					if (!isClosest(mesh)) return
 					socket.emit('event', {
 						type: 'mouseLeave',
-						...mouseCoords(mesh, resolution, event),
+						...mouseEvent(mesh, resolution, event),
 					})
 				}}
 				onPointerOver={event => {
+					if (!isClosest(mesh)) return
 					socket.emit('event', {
 						type: 'mouseEnter',
-						...mouseCoords(mesh, resolution, event),
+						...mouseEvent(mesh, resolution, event),
 					})
 				}}
 				onWheel={event => {
+					if (!isClosest(mesh)) return
 					socket.emit('event', {
 						type: 'mouseWheel',
-						...mouseCoords(mesh, resolution, event),
+						...mouseEvent(mesh, resolution, event),
 						deltaX: (event as any).deltaX,
 						deltaY: (event as any).deltaY,
 					})

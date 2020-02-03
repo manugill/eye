@@ -1,0 +1,21 @@
+*,
+*:before,
+*:after {
+	margin: 0;
+	padding: 0;
+	line-height: 1;
+}
+
+html,
+body,
+#root {
+	height: 100%;
+}
+
+body {
+	background: #111;
+	font-family: sans-serif;
+}
+
+
+/*# sourceMappingURL=/src.f69400ca.css.map */

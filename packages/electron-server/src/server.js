@@ -15,6 +15,8 @@ const createWindow = ({
     show: false,
     frame: false,
     transparent: true,
+    acceptFirstMouse: true,
+    disableAutoHideCursor: true,
     webPreferences: {
       offscreen: true,
       scrollBounce: true,
@@ -47,13 +49,18 @@ const onConnection = socket => {
 
   socket.on('disconnect', reason => {
     console.log('DISCONNECTED, destroying page!');
-    window.destroy();
+    setTimeout(() => window.destroy(), 10000);
   });
 
   let lastTimeouts = [];
   let lastFullPaint = {
     time: Date.now(),
     rect: { x: 0, y: 0, width: 0, height: 0 },
+  };
+  const clearTimeouts = () => {
+    for (let i = 0; i < lastTimeouts.length; i++) {
+      clearTimeout(lastTimeouts[i]);
+    }
   };
 
   const newPaint = (image, rect, quality = 100) => ({
@@ -71,7 +78,7 @@ const onConnection = socket => {
 
   window.webContents.on('paint', (_, rect, image) => {
     if (rect.width === 0 || rect.height === 0) {
-      console.log('empty frame ignored', rect);
+      // console.log('empty frame ignored', rect);
       return;
     }
     const bounds = window.getBounds();
@@ -79,15 +86,13 @@ const onConnection = socket => {
       bounds.width === rect.width && bounds.height == rect.height;
     const paint = newPaint(image, rect, isFullPaint ? 20 : undefined);
     if (isFullPaint) {
-      for (let i = 0; i < lastTimeouts.length; i++) {
-        clearTimeout(lastTimeouts[i]);
-      }
+      clearTimeouts();
       lastTimeouts = [
         setTimeout(() => socket.emit('paint', newPaint(image, rect)), 200),
       ];
     }
     if (!isPaintChanged(paint)) {
-      console.log('duplicate paint ignored');
+      // console.log('duplicate paint ignored');
       return;
     }
     if (isFullPaint) lastFullPaint = paint;
@@ -98,16 +103,26 @@ const onConnection = socket => {
     //   paint.time - lastPaint.time,
     //   Date.now() - paint.time,
     // );
-    console.log('paint emitted', rect);
+    // console.log('paint emitted', rect);
     socket.volatile.emit('paint', paint);
   });
+
+  window.webContents.on(
+    'cursor-changed',
+    (event, type, image, scale, size, hotspot) => {
+      console.log('cursor-changed', event, type, image, scale, size, hotspot);
+    },
+  );
 
   socket.on('move', () => {
     window.webContents.setZoomLevel(Math.random() * 0.1);
   });
 
   socket.on('event', event => {
-    if (event.type === 'mouseDown') console.log('event', query.url, event);
+    // if (event.type === 'mouseDown') console.log('event', query.url, event);
+    window.webContents.focus();
     window.webContents.sendInputEvent(event);
+    clearTimeouts();
+    window.webContents.invalidate();
   });
 };

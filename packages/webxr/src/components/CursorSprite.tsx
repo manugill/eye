@@ -3,7 +3,7 @@ import React, { useRef } from 'react'
 import { useLoader, useFrame, useThree } from 'react-three-fiber'
 
 import { cursor } from './cursor'
-import { currentIntersects } from './vrRaycast'
+import { closest } from './vrRaycast'
 import pointerImg from '../static/redball.png'
 
 const scale = 4
@@ -35,12 +35,11 @@ const CursorSprite = () => {
 		const geometry = geometryRef.current as any
 		const geometry2 = geometry2Ref.current as any
 
-		const intersects = Object.values<any>(currentIntersects)
-		const C = intersects.length ? intersects[0].point : cursor
+		const C = closest() ? closest().point : cursor
 		const lenAC = Math.sqrt(
 			Math.pow(A.x - C.x, 2) + Math.pow(A.y - C.y, 2) + Math.pow(A.z - C.z, 2),
 		)
-		console.log('lenAC', lenAC)
+		// console.log('lenAC', lenAC)
 		sprite.position.x = C.x
 		sprite.position.y = C.y
 		sprite.position.z = C.z + 0.75
