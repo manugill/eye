@@ -40281,7 +40281,8 @@ Mesh.prototype = Object.assign(Object.create(Object3D.prototype), {
           intersects.push(intersection);
         }
       }
-    }
+    } // console.log('intersects', intersects)
+
   },
   clone: function () {
     return new this.constructor(this.geometry, this.material).copy(this);
@@ -48416,10 +48417,12 @@ function WebXRManager(renderer, gl) {
 
   function setProjectionFromUnion(camera, cameraL, cameraR) {
     cameraLPos.setFromMatrixPosition(cameraL.matrixWorld);
-    cameraRPos.setFromMatrixPosition(cameraR.matrixWorld);
+    cameraRPos.setFromMatrixPosition(cameraR.matrixWorld); // console.log('  - setProjectionFromUnion', camera, cameraL, cameraR, cameraLPos, cameraRPos)
+
     var ipd = cameraLPos.distanceTo(cameraRPos);
     var projL = cameraL.projectionMatrix.elements;
-    var projR = cameraR.projectionMatrix.elements; // VR systems will have identical far and near planes, and
+    var projR = cameraR.projectionMatrix.elements; // console.log('  - ipd, proj', ipd, projL, projR)
+    // VR systems will have identical far and near planes, and
     // most likely identical top and bottom frustum extents.
     // Use the left camera for these values.
 
@@ -114887,41 +114890,43 @@ var keyboardEvent = function keyboardEvent(event) {
   };
 };
 
-var mouseEvent = function mouseEvent(mesh, resolution, event) {
-  if (!mesh) return {
-    type: 'mouseMove',
-    x: 0,
-    y: 0,
-    button: 'left'
-  };
-  var w = resolution[0],
-      h = resolution[1];
-  var _a = mesh.geometry.parameters,
-      width = _a.width,
-      height = _a.height;
-  var e = event;
-  var xTrue = e.point.x - mesh.position.x;
-  var yTrue = e.point.y - mesh.position.y;
-  var x = w / 2 + xTrue / (width / w);
-  var y = h / 2 + -yTrue / (height / h);
-  return {
-    x: x,
-    y: y,
-    globalX: x,
-    globalY: y,
-    movementX: e.movementX,
-    movementY: e.movementY,
-    deltaX: e.deltaX,
-    deltaY: e.deltaY,
-    wheelTicksX: e.wheelTicksX,
-    wheelTicksY: e.wheelTicksY,
-    accelerationRatioX: 1,
-    accelerationRatioY: 1,
-    hasPreciseScrollingDeltas: true,
-    canScroll: true,
-    clickCount: 1,
-    button: e.button === 1 ? 'middle' : e.button === 2 ? 'right' : 'left',
-    time: Date.now()
+var mouseEvent = function mouseEvent(mesh) {
+  return function (resolution, event) {
+    if (!mesh) return {
+      type: 'mouseMove',
+      x: 0,
+      y: 0,
+      button: 'left'
+    };
+    var w = resolution[0],
+        h = resolution[1];
+    var _a = mesh.geometry.parameters,
+        width = _a.width,
+        height = _a.height;
+    var e = event;
+    var xTrue = e.point.x - mesh.position.x;
+    var yTrue = e.point.y - mesh.position.y;
+    var x = w / 2 + xTrue / (width / w);
+    var y = h / 2 + -yTrue / (height / h);
+    return {
+      x: x,
+      y: y,
+      globalX: x,
+      globalY: y,
+      movementX: e.movementX,
+      movementY: e.movementY,
+      deltaX: e.deltaX,
+      deltaY: e.deltaY,
+      wheelTicksX: e.wheelTicksX,
+      wheelTicksY: e.wheelTicksY,
+      accelerationRatioX: 1,
+      accelerationRatioY: 1,
+      hasPreciseScrollingDeltas: true,
+      canScroll: true,
+      clickCount: 1,
+      button: e.button === 1 ? 'middle' : e.button === 2 ? 'right' : 'left',
+      time: Date.now()
+    };
   };
 };
 
@@ -114932,12 +114937,16 @@ var Browser = function Browser(_a) {
       resolution = _c === void 0 ? [1080, 1080] : _c,
       _d = _a.size,
       size = _d === void 0 ? [1.08 * 2, 1.08 * 2] : _d,
-      _e = _a.meshProps,
-      meshProps = _e === void 0 ? {} : _e;
+      _e = _a.position,
+      position = _e === void 0 ? [0, 0, 0] : _e,
+      _f = _a.meshProps,
+      meshProps = _f === void 0 ? {} : _f;
   var context = (0, _reactThreeFiber.useThree)();
   console.log('context', context);
   var meshRef = (0, _react.useRef)();
   var mesh = meshRef.current;
+  var meshDevToolsRef = (0, _react.useRef)();
+  var meshDevTools = meshDevToolsRef.current;
   var propDeps = [url, resolution[0], resolution[1]];
   var socket = (0, _react.useMemo)(function () {
     return (0, _socket.default)('http://localhost:3001', {
@@ -114945,121 +114954,170 @@ var Browser = function Browser(_a) {
       query: "width=" + resolution[0] + "&height=" + resolution[1] + "&url=" + url
     });
   }, []);
-  var materialRef = (0, _react.useCallback)(function (material) {
-    if (!material) return;
-    console.log('actualling creating material');
-    var mesh = material.parent;
-    console.log('material', material); // an image texture has to be loaded to use copyTextureToTexture
-    // may be a data texture works too but I didn't know how to use it
 
-    var loader = new THREE.TextureLoader();
-    var texture = loader.load("https://images.unsplash.com/source-404?fit=crop&fm=jpg&q=60&w=" + resolution[0] + "&h=" + resolution[1], function (texture) {
-      socket.on('paint', function (_a) {
-        var time = _a.time,
-            buffer = _a.buffer,
-            rect = _a.rect;
-        var receivedTime = Date.now();
-        var p = new THREE.Vector2(rect.x, resolution[1] - (rect.y + rect.height)); // the server returns a jpeg
+  var materialFunction = function materialFunction(isDevTools) {
+    if (isDevTools === void 0) {
+      isDevTools = false;
+    }
 
-        var url = URL.createObjectURL(new Blob([buffer], {
-          type: 'image/jpeg'
-        }));
-        var img = new Image();
+    return function (material) {
+      if (!material) return;
+      console.log('actualling creating material', material); // const mesh = material.parent
+      // an image texture has to be loaded to use copyTextureToTexture
+      // may be a data texture works too but I didn't know how to use it
 
-        img.onload = function () {
-          var loadedTime = Date.now();
-          var textureNew = new THREE.CanvasTexture(img);
-          context.gl.copyTextureToTexture(p, textureNew, texture);
-        };
+      var loader = new THREE.TextureLoader();
+      var texture = loader.load("https://images.unsplash.com/source-404?fit=crop&fm=jpg&q=60&w=" + resolution[0] + "&h=" + resolution[1], function (texture) {
+        socket.on('paint', function (_a) {
+          var devTools = _a.devTools,
+              _b = _a.paint,
+              time = _b.time,
+              buffer = _b.buffer,
+              rect = _b.rect;
+          if (devTools !== isDevTools) return;
+          var receivedTime = Date.now(); // console.log('devTools', devTools, time)
 
-        img.src = url;
+          var p = new THREE.Vector2(rect.x, resolution[1] - (rect.y + rect.height)); // the server returns a jpeg
+
+          var url = URL.createObjectURL(new Blob([buffer], {
+            type: 'image/jpeg'
+          }));
+          var img = new Image();
+
+          img.onload = function () {
+            var loadedTime = Date.now();
+            var textureNew = new THREE.CanvasTexture(img);
+            context.gl.copyTextureToTexture(p, textureNew, texture);
+          };
+
+          img.src = url;
+        });
+        socket.emit('move');
+        setTimeout(function () {
+          return socket.emit('move');
+        }, 500);
+        setTimeout(function () {
+          return socket.emit('move');
+        }, 100);
+        texture.minFilter = THREE.LinearFilter;
+        texture.generateMipmaps = false;
       });
-      socket.emit('move');
-      setTimeout(function () {
-        return socket.emit('move');
-      }, 500);
-      setTimeout(function () {
-        return socket.emit('move');
-      }, 100);
-      texture.minFilter = THREE.LinearFilter;
-      texture.generateMipmaps = false;
-    });
-    material.setValues({
-      map: texture
-    });
-  }, []);
-  var onKeyDown = (0, _react.useCallback)(function (event) {
-    var keyEvent = keyboardEvent(event);
-    console.log('onKeyDown 2', keyEvent, mesh);
-    socket.emit('event', keyEvent);
-    if (keyEvent.keyCode.length === 1) socket.emit('event', __assign(__assign({}, keyEvent), {
-      type: 'char'
-    }));
-  }, []);
-  var onKeyUp = (0, _react.useCallback)(function (event) {
-    var keyEvent = keyboardEvent(event);
-    console.log('onKeyUp 2', keyEvent, mesh);
-    socket.emit('event', keyEvent);
-  }, []);
+      material.setValues({
+        map: texture
+      });
+    };
+  };
+
+  var materialRef = (0, _react.useCallback)(materialFunction(), []);
+  var materialDevToolsRef = (0, _react.useCallback)(materialFunction(true), []);
   var raycast = (0, _react.useMemo)(function () {
     return (0, _vrRaycast.default)(context);
   }, [context]);
-  return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("mesh", __assign({}, meshProps, {
-    userData: {
-      onKeyDown: onKeyDown,
-      onKeyUp: onKeyUp
-    },
-    onKeyDown: onKeyDown,
-    onKeyUp: onKeyUp,
-    ref: meshRef,
-    raycast: raycast,
-    onPointerMove: function onPointerMove(event) {
-      if (!(0, _vrRaycast.isClosest)(mesh)) return;
-      socket.emit('event', __assign({
-        type: 'mouseMove'
-      }, mouseEvent(mesh, resolution, event)));
-    },
-    onPointerDown: function onPointerDown(event) {
-      if (!(0, _vrRaycast.isClosest)(mesh)) return;
-      console.log('event', event);
-      socket.emit('event', __assign({
-        type: 'mouseDown'
-      }, mouseEvent(mesh, resolution, event)));
-    },
-    onPointerUp: function onPointerUp(event) {
-      if (!(0, _vrRaycast.isClosest)(mesh)) return;
-      socket.emit('event', __assign({
-        type: 'mouseUp'
-      }, mouseEvent(mesh, resolution, event)));
-    },
-    onPointerOut: function onPointerOut(event) {
-      if (!(0, _vrRaycast.isClosest)(mesh)) return;
-      socket.emit('event', __assign({
-        type: 'mouseLeave'
-      }, mouseEvent(mesh, resolution, event)));
-    },
-    onPointerOver: function onPointerOver(event) {
-      if (!(0, _vrRaycast.isClosest)(mesh)) return;
-      socket.emit('event', __assign({
-        type: 'mouseEnter'
-      }, mouseEvent(mesh, resolution, event)));
-    },
-    onWheel: function onWheel(event) {
-      if (!(0, _vrRaycast.isClosest)(mesh)) return;
-      socket.emit('event', __assign(__assign({
-        type: 'mouseWheel'
-      }, mouseEvent(mesh, resolution, event)), {
-        deltaX: event.deltaX,
-        deltaY: event.deltaY
-      }));
+
+  var makeProps = function makeProps(devTools) {
+    if (devTools === void 0) {
+      devTools = false;
     }
-  }), _react.default.createElement("planeGeometry", {
+
+    console.log('devTools hello', devTools);
+
+    var emit = function emit(event) {
+      return socket.emit('event', __assign(__assign({}, event), {
+        devTools: devTools
+      }));
+    };
+
+    var m = devTools ? meshDevTools : mesh;
+    var mouse = mouseEvent(m);
+    var eventProps = {
+      onKeyDown: function onKeyDown(event) {
+        var keyEvent = keyboardEvent(event);
+        console.log('onKeyDown', keyEvent, m);
+        emit(keyEvent);
+        if (keyEvent.keyCode.length === 1) emit(__assign(__assign({}, keyEvent), {
+          type: 'char',
+          devTools: devTools
+        }));
+      },
+      onKeyUp: function onKeyUp(event) {
+        var keyEvent = keyboardEvent(event);
+        emit(keyEvent);
+      },
+      onPointerMove: function onPointerMove(event) {
+        if (!(0, _vrRaycast.isClosest)(m)) return;
+        emit(__assign({
+          type: 'mouseMove'
+        }, mouse(resolution, event)));
+      },
+      onPointerDown: function onPointerDown(event) {
+        if (!(0, _vrRaycast.isClosest)(m)) return;
+        console.log('onPointerDown', mouse(resolution, event));
+        emit(__assign({
+          type: 'mouseDown'
+        }, mouse(resolution, event)));
+      },
+      onPointerUp: function onPointerUp(event) {
+        if (!(0, _vrRaycast.isClosest)(m)) return;
+        emit(__assign({
+          type: 'mouseUp'
+        }, mouse(resolution, event)));
+      },
+      onPointerOut: function onPointerOut(event) {
+        // if (!isClosest(m)) return
+        emit(__assign({
+          type: 'mouseLeave'
+        }, mouse(resolution, event)));
+      },
+      onPointerOver: function onPointerOver(event) {
+        if (!(0, _vrRaycast.isClosest)(m)) return;
+        emit(__assign({
+          type: 'mouseEnter'
+        }, mouse(resolution, event)));
+      },
+      onWheel: function onWheel(event) {
+        if (!(0, _vrRaycast.isClosest)(m)) return;
+        emit(__assign(__assign({
+          type: 'mouseWheel'
+        }, mouse(resolution, event)), {
+          deltaX: event.deltaX,
+          deltaY: event.deltaY
+        }));
+      }
+    }; // make sure to online fire events when this is the "closest" item
+    // for (var key in eventProps) {
+    // 	eventProps[key] = event => {
+    // 		if (key !== 'onPointerOut' && !isClosest(m)) return
+    // 		eventProps[key](event)
+    // 	}
+    // }
+
+    return eventProps;
+  };
+
+  return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("mesh", __assign({
+    position: position
+  }, meshProps, {
+    ref: meshRef,
+    raycast: raycast
+  }, makeProps()), _react.default.createElement("planeGeometry", {
     attach: 'geometry',
     args: size
   }), _react.default.createElement("meshBasicMaterial", {
     attach: 'material',
-    ref: materialRef,
-    color: 'white'
+    color: 'white',
+    ref: materialRef
+  })), _react.default.createElement("mesh", __assign({
+    position: [position[0] + size[0] + 0.1, position[1], position[2]]
+  }, meshProps, {
+    ref: meshDevToolsRef,
+    raycast: raycast
+  }, makeProps(true)), _react.default.createElement("planeGeometry", {
+    attach: 'geometry',
+    args: size
+  }), _react.default.createElement("meshBasicMaterial", {
+    attach: 'material',
+    color: 'white',
+    ref: materialDevToolsRef
   })));
 };
 
@@ -115446,16 +115504,10 @@ function App() {
   }), _react.default.createElement(_react.Suspense, {
     fallback: _react.default.createElement(_reactThreeFiber.Dom, null, _react.default.createElement(_react.default.Fragment, null, "loading..."))
   }, _react.default.createElement(_Browser.default, __assign({}, {
-    size: [1080, 1080],
-    meshProps: {
-      position: [1, 1, -700]
-    }
-  })), _react.default.createElement(_Browser.default, __assign({}, {
     url: 'https://www.google.com',
     size: [600, 600],
-    meshProps: {
-      position: [-300, 2, -500]
-    }
+    position: [-300, 2, -500],
+    meshProps: {}
   })), _react.default.createElement(_CursorSprite.default, null))));
 }
 },{"react":"../node_modules/react/index.js","react-three-fiber":"../node_modules/react-three-fiber/web.js","react-hot-keys":"../node_modules/react-hot-keys/lib/esm/index.js","./vrRaycast":"components/vrRaycast.tsx","./Browser":"components/Browser.tsx","./CursorSprite":"components/CursorSprite.tsx","./createButton":"components/createButton.tsx","./cursor":"components/cursor.tsx"}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
@@ -115580,7 +115632,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56654" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52389" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -101,20 +101,20 @@ export default function App() {
 							<>loading...</>
 						</Dom>
 					}>
-					<Browser
+					{/* <Browser
 						{...{
 							size: [1080, 1080],
+							position: [1, 1, -700],
 							meshProps: {
-								position: [1, 1, -700],
 							},
 						}}
-					/>
+					/> */}
 					<Browser
 						{...{
 							url: 'https://www.google.com',
 							size: [600, 600],
+							position: [-300, 2, -500],
 							meshProps: {
-								position: [-300, 2, -500],
 							},
 						}}
 					/>
