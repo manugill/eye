@@ -40281,8 +40281,7 @@ Mesh.prototype = Object.assign(Object.create(Object3D.prototype), {
           intersects.push(intersection);
         }
       }
-    } // console.log('intersects', intersects)
-
+    }
   },
   clone: function () {
     return new this.constructor(this.geometry, this.material).copy(this);
@@ -48417,12 +48416,10 @@ function WebXRManager(renderer, gl) {
 
   function setProjectionFromUnion(camera, cameraL, cameraR) {
     cameraLPos.setFromMatrixPosition(cameraL.matrixWorld);
-    cameraRPos.setFromMatrixPosition(cameraR.matrixWorld); // console.log('  - setProjectionFromUnion', camera, cameraL, cameraR, cameraLPos, cameraRPos)
-
+    cameraRPos.setFromMatrixPosition(cameraR.matrixWorld);
     var ipd = cameraLPos.distanceTo(cameraRPos);
     var projL = cameraL.projectionMatrix.elements;
-    var projR = cameraR.projectionMatrix.elements; // console.log('  - ipd, proj', ipd, projL, projR)
-    // VR systems will have identical far and near planes, and
+    var projR = cameraR.projectionMatrix.elements; // VR systems will have identical far and near planes, and
     // most likely identical top and bottom frustum extents.
     // Use the left camera for these values.
 
@@ -115632,7 +115629,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52389" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62986" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
