@@ -31730,7 +31730,7 @@ if ("development" === 'production') {
 } else {
   module.exports = require('./cjs/react-dom.development.js');
 }
-},{"./cjs/react-dom.development.js":"../node_modules/react-dom/cjs/react-dom.development.js"}],"../node_modules/react-three-fiber/node_modules/@babel/runtime/helpers/esm/extends.js":[function(require,module,exports) {
+},{"./cjs/react-dom.development.js":"../node_modules/react-dom/cjs/react-dom.development.js"}],"../node_modules/@babel/runtime/helpers/esm/extends.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -31755,7 +31755,7 @@ function _extends() {
 
   return _extends.apply(this, arguments);
 }
-},{}],"../node_modules/react-three-fiber/node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js":[function(require,module,exports) {
+},{}],"../node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -84297,7 +84297,7 @@ E.prototype = {
 module.exports = E;
 module.exports.TinyEmitter = E;
 
-},{}],"../node_modules/fast-deep-equal/index.js":[function(require,module,exports) {
+},{}],"../node_modules/react-promise-suspense/node_modules/fast-deep-equal/index.js":[function(require,module,exports) {
 'use strict';
 
 var isArray = Array.isArray;
@@ -84436,7 +84436,7 @@ var usePromise = function (promise, inputs, lifespan) {
 };
 module.exports = usePromise;
 
-},{"fast-deep-equal":"../node_modules/fast-deep-equal/index.js"}],"../node_modules/debounce/index.js":[function(require,module,exports) {
+},{"fast-deep-equal":"../node_modules/react-promise-suspense/node_modules/fast-deep-equal/index.js"}],"../node_modules/debounce/index.js":[function(require,module,exports) {
 /**
  * Returns a function, that, as long as it continues to be invoked, will not
  * be triggered. The function will be called after it stops being called for
@@ -86795,7 +86795,7 @@ const Canvas = _react.default.memo(function Canvas(_ref) {
 });
 
 exports.Canvas = Canvas;
-},{"@babel/runtime/helpers/esm/extends":"../node_modules/react-three-fiber/node_modules/@babel/runtime/helpers/esm/extends.js","@babel/runtime/helpers/esm/objectWithoutPropertiesLoose":"../node_modules/react-three-fiber/node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js","three":"../node_modules/three/build/three.module.js","react-reconciler":"../node_modules/react-reconciler/index.js","scheduler":"../node_modules/scheduler/index.js","react":"../node_modules/react/index.js","tiny-emitter":"../node_modules/tiny-emitter/index.js","react-promise-suspense":"../node_modules/react-promise-suspense/build/index.js","react-dom":"../node_modules/react-dom/index.js","react-use-measure":"../node_modules/react-use-measure/dist/web.js","@juggle/resize-observer":"../node_modules/@juggle/resize-observer/lib/exports/resize-observer.js","react-merge-refs":"../node_modules/react-merge-refs/dist/index.mjs"}],"../node_modules/@babel/runtime/helpers/esm/classCallCheck.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/esm/extends":"../node_modules/@babel/runtime/helpers/esm/extends.js","@babel/runtime/helpers/esm/objectWithoutPropertiesLoose":"../node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js","three":"../node_modules/three/build/three.module.js","react-reconciler":"../node_modules/react-reconciler/index.js","scheduler":"../node_modules/scheduler/index.js","react":"../node_modules/react/index.js","tiny-emitter":"../node_modules/tiny-emitter/index.js","react-promise-suspense":"../node_modules/react-promise-suspense/build/index.js","react-dom":"../node_modules/react-dom/index.js","react-use-measure":"../node_modules/react-use-measure/dist/web.js","@juggle/resize-observer":"../node_modules/@juggle/resize-observer/lib/exports/resize-observer.js","react-merge-refs":"../node_modules/react-merge-refs/dist/index.mjs"}],"../node_modules/@babel/runtime/helpers/esm/classCallCheck.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -86831,6 +86831,27 @@ function _createClass(Constructor, protoProps, staticProps) {
   if (staticProps) _defineProperties(Constructor, staticProps);
   return Constructor;
 }
+},{}],"../node_modules/@babel/runtime/helpers/esm/typeof.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = _typeof;
+
+function _typeof(obj) {
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+    exports.default = _typeof = function _typeof(obj) {
+      return typeof obj;
+    };
+  } else {
+    exports.default = _typeof = function _typeof(obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+  }
+
+  return _typeof(obj);
+}
 },{}],"../node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js":[function(require,module,exports) {
 "use strict";
 
@@ -86845,29 +86866,6 @@ function _assertThisInitialized(self) {
   }
 
   return self;
-}
-},{}],"../node_modules/@babel/runtime/helpers/esm/typeof.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = _typeof;
-
-function _typeof(obj) {
-  "@babel/helpers - typeof";
-
-  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-    exports.default = _typeof = function _typeof(obj) {
-      return typeof obj;
-    };
-  } else {
-    exports.default = _typeof = function _typeof(obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-    };
-  }
-
-  return _typeof(obj);
 }
 },{}],"../node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js":[function(require,module,exports) {
 "use strict";
@@ -87872,17 +87870,29 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 /*!
- * hotkeys-js v3.8.1
+ * hotkeys-js v3.7.3
  * A simple micro-library for defining and dispatching keyboard shortcuts. It has no dependencies.
  * 
- * Copyright (c) 2020 kenny wong <wowohoo@qq.com>
+ * Copyright (c) 2019 kenny wong <wowohoo@qq.com>
  * http://jaywcjlove.github.io/hotkeys
  * 
  * Licensed under the MIT license.
  */
+function _typeof(obj) {
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+    _typeof = function (obj) {
+      return typeof obj;
+    };
+  } else {
+    _typeof = function (obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+  }
+
+  return _typeof(obj);
+}
+
 var isff = typeof navigator !== 'undefined' ? navigator.userAgent.toLowerCase().indexOf('firefox') > 0 : false; // 绑定事件
 
 function addEvent(object, event, method) {
@@ -87942,7 +87952,7 @@ var _keyMap = {
   tab: 9,
   clear: 12,
   enter: 13,
-  return: 13,
+  "return": 13,
   esc: 27,
   escape: 27,
   space: 32,
@@ -87951,7 +87961,7 @@ var _keyMap = {
   right: 39,
   down: 40,
   del: 46,
-  delete: 46,
+  "delete": 46,
   ins: 45,
   insert: 45,
   home: 36,
@@ -88045,7 +88055,7 @@ function filter(event) {
   var tagName = target.tagName;
   var flag = true; // ignore: isContentEditable === 'true', <input> and <textarea> when readOnly state is false, <select>
 
-  if (target.isContentEditable || (tagName === 'INPUT' || tagName === 'TEXTAREA' || tagName === 'SELECT') && !target.readOnly) {
+  if (target.isContentEditable || (tagName === 'INPUT' || tagName === 'TEXTAREA') && !target.readOnly) {
     flag = false;
   }
 
@@ -88234,14 +88244,6 @@ function dispatch(event) {
       _downKeys.push(keyNum);
     } else if (!event[keyName] && _downKeys.indexOf(keyNum) > -1) {
       _downKeys.splice(_downKeys.indexOf(keyNum), 1);
-    } else if (keyName === 'metaKey' && event[keyName] && _downKeys.length === 3) {
-      /**
-       * Fix if Command is pressed:
-       * ===============================
-       */
-      if (!(event.ctrlKey || event.shiftKey || event.altKey)) {
-        _downKeys = _downKeys.slice(_downKeys.indexOf(keyNum));
-      }
     }
   });
   /**
@@ -88263,26 +88265,6 @@ function dispatch(event) {
     if (Object.prototype.hasOwnProperty.call(_mods, e)) {
       _mods[e] = event[modifierMap[e]];
     }
-  }
-  /**
-   * https://github.com/jaywcjlove/hotkeys/pull/129
-   * This solves the issue in Firefox on Windows where hotkeys corresponding to special characters would not trigger.
-   * An example of this is ctrl+alt+m on a Swedish keyboard which is used to type μ.
-   * Browser support: https://caniuse.com/#feat=keyboardevent-getmodifierstate
-   */
-
-
-  if (event.getModifierState && !(event.altKey && !event.ctrlKey) && event.getModifierState('AltGraph')) {
-    if (_downKeys.indexOf(17) === -1) {
-      _downKeys.push(17);
-    }
-
-    if (_downKeys.indexOf(18) === -1) {
-      _downKeys.push(18);
-    }
-
-    _mods[17] = true;
-    _mods[18] = true;
   } // 获取范围 默认为 `all`
 
 
@@ -88442,11 +88424,11 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/es
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/esm/createClass"));
 
-var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/esm/assertThisInitialized"));
-
 var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/esm/possibleConstructorReturn"));
 
 var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/esm/getPrototypeOf"));
+
+var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/esm/assertThisInitialized"));
 
 var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/esm/inherits"));
 
@@ -88462,47 +88444,16 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _createSuper(Derived) {
-  return function () {
-    var Super = (0, _getPrototypeOf2.default)(Derived),
-        result;
-
-    if (_isNativeReflectConstruct()) {
-      var NewTarget = (0, _getPrototypeOf2.default)(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-
-    return (0, _possibleConstructorReturn2.default)(this, result);
-  };
-}
-
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === "function") return true;
-
-  try {
-    Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
 var ReactHotkeys =
 /*#__PURE__*/
 function (_React$Component) {
   (0, _inherits2.default)(ReactHotkeys, _React$Component);
 
-  var _super = _createSuper(ReactHotkeys);
-
   function ReactHotkeys(props) {
     var _this;
 
     (0, _classCallCheck2.default)(this, ReactHotkeys);
-    _this = _super.call(this, props);
+    _this = (0, _possibleConstructorReturn2.default)(this, (0, _getPrototypeOf2.default)(ReactHotkeys).call(this, props));
     _this.isKeyDown = false;
     _this.handle = void 0;
     _this.onKeyDown = _this.onKeyDown.bind((0, _assertThisInitialized2.default)(_this));
@@ -88582,7 +88533,7 @@ ReactHotkeys.defaultProps = {
   filter: function filter(event) {
     var target = event.target || event.srcElement;
     var tagName = target.tagName;
-    return !(target.isContentEditable || tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA');
+    return !(target.isContentEditable || tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
   }
 };
 ReactHotkeys.propTypes = {
@@ -88593,7 +88544,7 @@ ReactHotkeys.propTypes = {
   disabled: PropTypes.bool,
   splitKey: PropTypes.string
 };
-},{"@babel/runtime/helpers/esm/classCallCheck":"../node_modules/@babel/runtime/helpers/esm/classCallCheck.js","@babel/runtime/helpers/esm/createClass":"../node_modules/@babel/runtime/helpers/esm/createClass.js","@babel/runtime/helpers/esm/assertThisInitialized":"../node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js","@babel/runtime/helpers/esm/possibleConstructorReturn":"../node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js","@babel/runtime/helpers/esm/getPrototypeOf":"../node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js","@babel/runtime/helpers/esm/inherits":"../node_modules/@babel/runtime/helpers/esm/inherits.js","react":"../node_modules/react/index.js","prop-types":"../node_modules/prop-types/index.js","hotkeys-js":"../node_modules/hotkeys-js/dist/hotkeys.esm.js"}],"../node_modules/base64-js/index.js":[function(require,module,exports) {
+},{"@babel/runtime/helpers/esm/classCallCheck":"../node_modules/@babel/runtime/helpers/esm/classCallCheck.js","@babel/runtime/helpers/esm/createClass":"../node_modules/@babel/runtime/helpers/esm/createClass.js","@babel/runtime/helpers/esm/possibleConstructorReturn":"../node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js","@babel/runtime/helpers/esm/getPrototypeOf":"../node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js","@babel/runtime/helpers/esm/assertThisInitialized":"../node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js","@babel/runtime/helpers/esm/inherits":"../node_modules/@babel/runtime/helpers/esm/inherits.js","react":"../node_modules/react/index.js","prop-types":"../node_modules/prop-types/index.js","hotkeys-js":"../node_modules/hotkeys-js/dist/hotkeys.esm.js"}],"../node_modules/base64-js/index.js":[function(require,module,exports) {
 'use strict'
 
 exports.byteLength = byteLength
@@ -107977,20 +107928,50 @@ var size = [600, 600];
 var ComponentTerminal = function ComponentTerminal() {
   var meshRef = (0, _react.useRef)(); // const mesh = meshRef.current as any
 
-  var materialRef = (0, _react.useCallback)(function (material) {
-    console.log('material', material);
+  var material1Ref = (0, _react.useCallback)(function (material1) {
     var el = document.querySelector('#terminal1');
     var term = new _xterm.Terminal({
       allowTransparency: true
     });
     term.open(el);
     term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ');
-    var canvas = el.querySelector('.xterm-text-layer');
-    var texture = new THREE.Texture(canvas);
-    material.setValues({
-      map: texture
+    var canvas1 = el.querySelector('.xterm-text-layer');
+    var texture1 = new THREE.Texture(canvas1);
+    material1.setValues({
+      map: texture1,
+      transparent: true
     });
-    texture.needsUpdate = true;
+    texture1.needsUpdate = true;
+  }, []);
+  var material2Ref = (0, _react.useCallback)(function (material2) {
+    var el = document.querySelector('#terminal1');
+    var canvas2 = el.querySelector('.xterm-selection-layer');
+    var texture2 = new THREE.Texture(canvas2);
+    material2.setValues({
+      map: texture2,
+      transparent: true
+    });
+    texture2.needsUpdate = true;
+  }, []);
+  var material3Ref = (0, _react.useCallback)(function (material3) {
+    var el = document.querySelector('#terminal1');
+    var canvas3 = el.querySelector('.xterm-link-layer');
+    var texture3 = new THREE.Texture(canvas3);
+    material3.setValues({
+      map: texture3,
+      transparent: true
+    });
+    texture3.needsUpdate = true;
+  }, []);
+  var material4Ref = (0, _react.useCallback)(function (material4) {
+    var el = document.querySelector('#terminal1');
+    var canvas4 = el.querySelector('.xterm-cursor-layer');
+    var texture4 = new THREE.Texture(canvas4);
+    material4.setValues({
+      map: texture4,
+      transparent: true
+    });
+    texture4.needsUpdate = true;
   }, []);
   return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("mesh", __assign({
     position: position
@@ -108000,9 +107981,17 @@ var ComponentTerminal = function ComponentTerminal() {
     attach: 'geometry',
     args: size
   }), _react.default.createElement("meshBasicMaterial", {
-    attach: 'material',
-    color: 'red',
-    ref: materialRef
+    attach: 'material1',
+    ref: material1Ref
+  }), _react.default.createElement("meshBasicMaterial", {
+    attach: 'material2',
+    ref: material2Ref
+  }), _react.default.createElement("meshBasicMaterial", {
+    attach: 'material3',
+    ref: material3Ref
+  }), _react.default.createElement("meshBasicMaterial", {
+    attach: 'material4',
+    ref: material4Ref
   })));
 };
 
@@ -108429,7 +108418,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57422" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58634" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
