@@ -107924,10 +107924,12 @@ var __assign = void 0 && (void 0).__assign || function () {
 var meshProps = {};
 var position = [-300, 2, -500];
 var size = [600, 600];
+var materialArray = [];
 
 var ComponentTerminal = function ComponentTerminal() {
   var meshRef = (0, _react.useRef)(); // const mesh = meshRef.current as any
 
+  window.meshRef = meshRef;
   var material1Ref = (0, _react.useCallback)(function (material1) {
     var el = document.querySelector('#terminal1');
     var term = new _xterm.Terminal({
@@ -107935,13 +107937,16 @@ var ComponentTerminal = function ComponentTerminal() {
     });
     term.open(el);
     term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ');
+    window.term = term;
     var canvas1 = el.querySelector('.xterm-text-layer');
     var texture1 = new THREE.Texture(canvas1);
     material1.setValues({
       map: texture1,
-      transparent: true
+      transparent: true,
+      needsUpdate: true
     });
     texture1.needsUpdate = true;
+    materialArray.push(material1);
   }, []);
   var material2Ref = (0, _react.useCallback)(function (material2) {
     var el = document.querySelector('#terminal1');
@@ -107949,9 +107954,11 @@ var ComponentTerminal = function ComponentTerminal() {
     var texture2 = new THREE.Texture(canvas2);
     material2.setValues({
       map: texture2,
-      transparent: true
+      transparent: true,
+      needsUpdate: true
     });
     texture2.needsUpdate = true;
+    materialArray.push(material2);
   }, []);
   var material3Ref = (0, _react.useCallback)(function (material3) {
     var el = document.querySelector('#terminal1');
@@ -107959,9 +107966,11 @@ var ComponentTerminal = function ComponentTerminal() {
     var texture3 = new THREE.Texture(canvas3);
     material3.setValues({
       map: texture3,
-      transparent: true
+      transparent: true,
+      needsUpdate: true
     });
     texture3.needsUpdate = true;
+    materialArray.push(material3);
   }, []);
   var material4Ref = (0, _react.useCallback)(function (material4) {
     var el = document.querySelector('#terminal1');
@@ -107969,12 +107978,15 @@ var ComponentTerminal = function ComponentTerminal() {
     var texture4 = new THREE.Texture(canvas4);
     material4.setValues({
       map: texture4,
-      transparent: true
+      transparent: true,
+      needsUpdate: true
     });
     texture4.needsUpdate = true;
+    materialArray.push(material4);
   }, []);
   return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("mesh", __assign({
-    position: position
+    position: position,
+    material: materialArray
   }, meshProps, {
     ref: meshRef
   }), _react.default.createElement("planeGeometry", {
@@ -108418,7 +108430,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58634" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62605" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

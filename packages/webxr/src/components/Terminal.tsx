@@ -3,15 +3,19 @@ import React, { useState, useRef, useCallback, useMemo } from 'react'
 import { useThree, ReactThreeFiber } from 'react-three-fiber'
 import { Terminal } from 'xterm'
 import 'xterm/css/xterm.css'
+import { Material } from 'three'
 
 const meshProps = {}
 const position = [-300, 2, -500]
 const size = [600, 600]
+const materialArray = []
+
+
 
 const ComponentTerminal = () => {
 	const meshRef = useRef()
 	// const mesh = meshRef.current as any
-
+	window.meshRef = meshRef;
 	const material1Ref = useCallback((material1) => {
 		
 
@@ -23,11 +27,15 @@ const ComponentTerminal = () => {
 		term.open(el)
 		term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ')
 
+	
+		window.term = term;
+
 		const canvas1: HTMLCanvasElement = el.querySelector('.xterm-text-layer')
 		const texture1 = new THREE.Texture(canvas1)
 		
-		material1.setValues({ map: texture1 , transparent: true})
+		material1.setValues({ map: texture1 , transparent: true, needsUpdate : true})
 		texture1.needsUpdate = true
+		materialArray.push(material1);
 
 	},[])
 	
@@ -37,9 +45,9 @@ const ComponentTerminal = () => {
 		const el = document.querySelector('#terminal1')
 		const canvas2: HTMLCanvasElement = el.querySelector('.xterm-selection-layer')
 		const texture2 = new THREE.Texture(canvas2)
-		material2.setValues({ map: texture2 , transparent: true})
+		material2.setValues({ map: texture2 , transparent: true, needsUpdate : true})
 		texture2.needsUpdate = true
-
+		materialArray.push(material2);
 	
 	},[])
 	const material3Ref = useCallback((material3) => {
@@ -48,9 +56,9 @@ const ComponentTerminal = () => {
 		const el = document.querySelector('#terminal1')
 		const canvas3: HTMLCanvasElement = el.querySelector('.xterm-link-layer')
 		const texture3 = new THREE.Texture(canvas3)
-		material3.setValues({ map: texture3 , transparent: true})
+		material3.setValues({ map: texture3 , transparent: true, needsUpdate : true})
 		texture3.needsUpdate = true
-
+		materialArray.push(material3);
 	
 	},[])
 	const material4Ref = useCallback((material4) => {
@@ -59,9 +67,9 @@ const ComponentTerminal = () => {
 		const el = document.querySelector('#terminal1')
 		const canvas4: HTMLCanvasElement = el.querySelector('.xterm-cursor-layer')
 		const texture4 = new THREE.Texture(canvas4)
-		material4.setValues({ map: texture4 , transparent: true})
+		material4.setValues({ map: texture4 , transparent: true, needsUpdate : true})
 		texture4.needsUpdate = true
-
+		materialArray.push(material4);
 	
 	},[])
 
@@ -72,6 +80,7 @@ const ComponentTerminal = () => {
 		<>
 			<mesh
 				position={position}
+				material={materialArray}
 				{...meshProps}
 				ref={meshRef}
 				// raycast={raycast}
