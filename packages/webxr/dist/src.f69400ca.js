@@ -107954,55 +107954,57 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-var __assign = void 0 && (void 0).__assign || function () {
-  __assign = Object.assign || function (t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-      s = arguments[i];
-
-      for (var p in s) {
-        if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-      }
-    }
-
-    return t;
-  };
-
-  return __assign.apply(this, arguments);
-};
-
-var meshProps = {};
 var position = [-300, 2, -500];
 var size = [600, 600];
 
 var ComponentTerminal = function ComponentTerminal() {
-  var meshRef = (0, _react.useRef)(); // const mesh = meshRef.current as any
+  var _a = (0, _react.useState)([]),
+      material = _a[0],
+      setMaterial = _a[1];
 
-  var materialRef = (0, _react.useCallback)(function (material) {
-    console.log('material', material);
+  var meshRef = (0, _react.useCallback)(function (mesh) {
+    console.log('mesh', mesh);
     var el = document.querySelector('#terminal1');
     var term = new _xterm.Terminal({
       allowTransparency: true
     });
-    term.open(el);
-    term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ');
-    var canvas = el.querySelector('.xterm-text-layer');
-    var texture = new THREE.Texture(canvas);
-    material.setValues({
-      map: texture
+    term.open(el); // term.loadAddon(new WebglAddon())
+
+    term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ '); // const classes = ['canvas:not(.xterm-link-layer):not(.xterm-cursor-layer)']
+
+    var classes = ['.xterm-selection-layer', '.xterm-text-layer'];
+    var textures = classes.map(function (className) {
+      var canvas = el.querySelector(className);
+      console.log('canvas', canvas);
+      var texture = new THREE.Texture(canvas);
+      texture.needsUpdate = true;
+      return texture;
     });
-    texture.needsUpdate = true;
+    var materials = textures.map(function (texture) {
+      var material = new THREE.MeshBasicMaterial();
+      material.setValues({
+        map: texture
+      });
+      return material;
+    });
+    term.onSelectionChange(function () {
+      console.log('onRender');
+      textures.forEach(function (texture) {
+        return texture.needsUpdate = true;
+      });
+    });
+    setMaterial(materials);
   }, []);
-  return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("mesh", __assign({
-    position: position
-  }, meshProps, {
+  return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("mesh", {
+    position: position,
+    material: material,
     ref: meshRef
-  }), _react.default.createElement("planeGeometry", {
+  }, _react.default.createElement("planeGeometry", {
     attach: 'geometry',
     args: size
   }), _react.default.createElement("meshBasicMaterial", {
     attach: 'material',
-    color: 'red',
-    ref: materialRef
+    color: 'red'
   })));
 };
 
@@ -108332,8 +108334,8 @@ function App() {
       }
     },
     onPointerMove: function onPointerMove(event) {
-      if (!context) return;
-      event.persist();
+      if (!context) return; // event.persist()
+
       context.events.onPointerMove(event);
       (0, _cursor.eventToXY)(event);
     },
@@ -108429,7 +108431,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57422" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53051" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

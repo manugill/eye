@@ -12712,6 +12712,11 @@ xtend@^4.0.0, xtend@~4.0.1:
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
 
+xterm-addon-webgl@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/xterm-addon-webgl/-/xterm-addon-webgl-0.7.0.tgz#a13732ac937170e53ce02ec91963da042c80614b"
+  integrity sha512-PMWLgccAF31GulCYkQxIA8qwMI4q4UbRi5O/zwMnSJWBozB0yy84lX31ZhJeJhcrlEn1Vpcd+OUGPE8Z1hBjnw==
+
 xterm@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/xterm/-/xterm-4.6.0.tgz#1b49b32e546409c110fbe8ece0b4a388504a937d"

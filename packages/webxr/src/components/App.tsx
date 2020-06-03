@@ -65,7 +65,7 @@ export default function App() {
 				}}
 				onPointerMove={(event) => {
 					if (!context) return
-					event.persist()
+					// event.persist()
 					context.events.onPointerMove(event)
 					eventToXY(event)
 				}}
