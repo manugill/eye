@@ -1,11 +1,9 @@
 {
   "name": "eye",
   "private": true,
-  "scripts": {
-    "start": "lerna start",
-    "build": "lerna build"
-  },
-  "devDependencies": {
-    "lerna": "^3.20.2"
-  }
+  "workspaces": [
+    "webxr",
+    "electron-server",
+    "theia"
+  ]
 }

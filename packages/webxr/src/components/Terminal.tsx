@@ -8,96 +8,73 @@ const meshProps = {}
 const position = [-300, 2, -500]
 const size = [600, 600]
 
+const classes = [
+	'.xterm-selection-layer',
+	'.xterm-link-layer',
+	'.xterm-text-layer',
+	'.xterm-cursor-layer',
+]
+
 const ComponentTerminal = () => {
-	const meshRef = useRef()
-	var term = new Terminal({
-		allowTransparency: true,
-	})
-	const el = document.querySelector('#terminal1')
-	term.open(el)
-	term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ')
-	console.log('AMIt')
-	const materialRef1 = useCallback((material) => {
-		const canvas: HTMLCanvasElement = el.querySelector('.xterm-selection-layer')
-		const texture = new THREE.Texture(canvas)
+	const refs = classes.map(() => useRef())
+	const materials = refs.map((ref) => ref.current)
 
-		material.setValues({ map: texture, transparent: true })
-		//TODO: Set Event as per layer
-		term.onSelectionChange(() => {
-			texture.needsUpdate = true
+	// console.log('materials', materials)
+	// const addMaterial = (material) => setMaterials([...materials, material])
+
+	useMemo(() => {
+		if (materials.some((material) => !material)) {
+			// do not run until all materials are ready (i.e. not undefined)
+			return undefined
+		}
+
+		var term = new Terminal({
+			allowTransparency: true,
+			cursorBlink: true,
 		})
-	}, [])
+		const el = document.querySelector('#terminal1')
+		term.open(el)
+		term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ')
 
-	const materialRef2 = useCallback((material) => {
-		const canvas: HTMLCanvasElement = el.querySelector('.xterm-link-layer')
-		const texture = new THREE.Texture(canvas)
+		classes.map((className, index) => {
+			const material = materials[index]
+			const canvas: HTMLCanvasElement = el.querySelector(className)
+			const texture = new THREE.Texture(canvas)
 
-		material.setValues({ map: texture, transparent: true })
-		//TODO: Set Event as per layer
-		term.onSelectionChange(() => {
-			texture.needsUpdate = true
+			material.setValues({ map: texture, transparent: true })
 		})
-	}, [])
 
-	const materialRef3 = useCallback((material) => {
-		const canvas: HTMLCanvasElement = el.querySelector('.xterm-text-layer')
-		const texture = new THREE.Texture(canvas)
-
-		material.setValues({ map: texture, transparent: true })
-		//TODO: Set Event as per layer
+		// TODO: @Amit, please fix this
 		term.onSelectionChange(() => {
-			texture.needsUpdate = true
+			materials.map((material) => (material.map.needsUpdate = true))
 		})
-	}, [])
-
-	const materialRef4 = useCallback((material) => {
-		const canvas: HTMLCanvasElement = el.querySelector('.xterm-cursor-layer')
-		const texture = new THREE.Texture(canvas)
-
-		material.setValues({ map: texture, transparent: true })
-		//TODO: Set Event as per layer
-		term.onSelectionChange(() => {
-			texture.needsUpdate = true
+		term.onRender(() => {
+			materials.map((material) => (material.map.needsUpdate = true))
 		})
-	}, [])
+		term.onCursorMove(() => {
+			materials.map((material) => (material.map.needsUpdate = true))
+		})
+		term.onLineFeed(() => {
+			materials.map((material) => (material.map.needsUpdate = true))
+		})
+		term.onKey(() => {
+			materials.map((material) => (material.map.needsUpdate = true))
+		})
+	}, [materials])
+
 	return (
 		<>
-			<mesh
-				position={position}
-				{...meshProps}
-				ref={meshRef}
-				// raycast={raycast}
-			>
-				<planeGeometry attach='geometry' args={size} />
-				<meshBasicMaterial attach='material' ref={materialRef1} />
-			</mesh>
-			<mesh
-				position={position}
-				{...meshProps}
-				ref={meshRef}
-				// raycast={raycast}
-			>
-				<planeGeometry attach='geometry' args={size} />
-				<meshBasicMaterial attach='material' ref={materialRef2} />
-			</mesh>
-			<mesh
-				position={position}
-				{...meshProps}
-				ref={meshRef}
-				// raycast={raycast}
-			>
-				<planeGeometry attach='geometry' args={size} />
-				<meshBasicMaterial attach='material' ref={materialRef3} />
-			</mesh>
-			<mesh
-				position={position}
-				{...meshProps}
-				ref={meshRef}
-				// raycast={raycast}
-			>
-				<planeGeometry attach='geometry' args={size} />
-				<meshBasicMaterial attach='material' ref={materialRef4} />
-			</mesh>
+			{classes.map((_, index) => (
+				<mesh
+					key={index}
+					position={position}
+					{...meshProps}
+					// raycast={raycast}
+				>
+					<planeGeometry attach='geometry' args={size} />
+					<meshBasicMaterial attach='material' ref={refs[index]} />
+				</mesh>
+			))}
 		</>
 	)
 }
