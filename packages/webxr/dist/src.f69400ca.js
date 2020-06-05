@@ -107927,56 +107927,60 @@ var size = [600, 600];
 
 var ComponentTerminal = function ComponentTerminal() {
   var meshRef = (0, _react.useRef)();
+  var term = new _xterm.Terminal({
+    allowTransparency: true
+  });
+  var el = document.querySelector('#terminal1');
+  term.open(el);
+  term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ');
+  console.log('AMIt');
   var materialRef1 = (0, _react.useCallback)(function (material) {
-    var el = document.querySelector('#terminal1');
-    var term = new _xterm.Terminal({
-      allowTransparency: true
-    });
-    term.open(el);
-    term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ');
     var canvas = el.querySelector('.xterm-selection-layer');
     var texture = new THREE.Texture(canvas);
     material.setValues({
       map: texture,
       transparent: true
-    });
-    texture.needsUpdate = true;
+    }); //TODO: Set Event as per layer
+
     term.onSelectionChange(function () {
       texture.needsUpdate = true;
     });
   }, []);
   var materialRef2 = (0, _react.useCallback)(function (material) {
-    console.log('material', material);
-    var el = document.querySelector('#terminal1');
     var canvas = el.querySelector('.xterm-link-layer');
     var texture = new THREE.Texture(canvas);
     material.setValues({
       map: texture,
       transparent: true
+    }); //TODO: Set Event as per layer
+
+    term.onSelectionChange(function () {
+      texture.needsUpdate = true;
     });
-    texture.needsUpdate = true;
   }, []);
   var materialRef3 = (0, _react.useCallback)(function (material) {
-    console.log('material', material);
-    var el = document.querySelector('#terminal1');
     var canvas = el.querySelector('.xterm-text-layer');
     var texture = new THREE.Texture(canvas);
     material.setValues({
       map: texture,
       transparent: true
+    }); //TODO: Set Event as per layer
+
+    term.onSelectionChange(function () {
+      texture.needsUpdate = true;
     });
-    texture.needsUpdate = true;
   }, []);
   var materialRef4 = (0, _react.useCallback)(function (material) {
-    console.log('material', material);
-    var el = document.querySelector('#terminal1');
     var canvas = el.querySelector('.xterm-cursor-layer');
     var texture = new THREE.Texture(canvas);
     material.setValues({
       map: texture,
       transparent: true
+    }); //TODO: Set Event as per layer
+
+    term.onSelectionChange(function () {
+      texture.needsUpdate = true;
     });
-    texture.needsUpdate = true;
   }, []);
   return _react.default.createElement(_react.default.Fragment, null, _react.default.createElement("mesh", __assign({
     position: position
@@ -108444,7 +108448,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51732" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61918" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
