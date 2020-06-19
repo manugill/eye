@@ -1,7 +1,7 @@
 # eye
 Attempt to build an VR/AR IDE using WebXR APIs. Goal is to improve productivity compared to monitors by a long shot. Fast enough to work on your mobile phone. Imagine if using just a keyboard and a VR headset, you could code 1.5x-2x faster. That's the goal, not saying it's achievable but I'm trying.
 
-The devices to make the full use of this idea are not ready yet (something Magic Leap but actually good i.e. higher resolution and FOV, or even VR headsets with 4k in each eye). But I want the software to be ready before the hardware catches up.
+The devices to make the full use of this idea are not ready yet (something like Magic Leap but actually good i.e. higher resolution and FOV, or even VR headsets with 4k in each eye). But I want the software to be ready before the hardware catches up.
 
 ## v0.1 roadmap
 We need three things:
