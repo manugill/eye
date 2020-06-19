@@ -11,7 +11,13 @@ We need three things:
     - Always visible type information for other tokens in the same line but with less detail.
     - Always visible type information for nearby lines but with even less detail.
   - Constant autocomplete without blocking code. Not sure about the UI for this yet either.
+- Sane window management, thinking sort of a 360 degree flex box thing. You can put shit behind you.
   
 ## 1.0 ideas
 - Multiple workspaces that you can move around in. You never close a project, you physically move from one to another.
 - For front-end, connect the browser's elements to the actual code. In real time. Like when you focus on an element, it's highlighted in the browser.
+
+# Architecture
+I'm building it using react-three-fiber. The benefit of using React should be obvious, we can build something easily extendable, people just have to write their own components and that'll be our plugins (on the front-end side at least).
+Parcel for the bundler (could change), but it supports React fast refresh which is awesome (in dev mode updates are reflected in the VR environment instantly without disrupting the camera).
+For the back-end, I'll be using Theia IDE and their client-side websockets and webworker. Essentially this is a new front-end for Theia.
