@@ -3,7 +3,7 @@ Attempt to build an VR/AR IDE using WebXR APIs. Goal is to improve productivity 
 
 The devices to make the full use of this idea are not ready yet (something like Magic Leap but actually good i.e. higher resolution and FOV, or even VR headsets with 4k in each eye). But I want the software to be ready before the hardware catches up.
 
-Productivity user interfaces in XR are still a very nascent field, nobody's solved the problem in substantial way yet. This project also aims to explore and implements in that area.
+Productivity-focused user interfaces in XR are still a very nascent field, nobody's solved the challenges in a substantial way yet. This project also aims to experiment, explore and implements some ideas in that space during the course of its development.
 
 ## v0.1 roadmap
 We need three things:
