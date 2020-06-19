@@ -19,7 +19,7 @@ We need three things:
   
 ## 1.0 ideas
 - Multiple workspaces that you can move around in. You never close a project, you physically move from one to another.
-- For front-end, connect the browser's elements to the actual code. In real time. Like when you focus on an element, it's highlighted in the browser.
+- For front-end, connect the browser's elements to the actual code. In real time. Like when you focus on an element, it's highlighted in the code and vice-versa.
 
 # Architecture
 I'm building it using react-three-fiber. The benefit of using React should be obvious, we can build something easily extendable, people just have to write their own components and that'll be our plugins (on the front-end side at least).
