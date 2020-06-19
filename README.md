@@ -14,3 +14,4 @@ We need three things:
   
 ## 1.0 ideas
 - Multiple workspaces that you can move around in. You never close a project, you physically move from one to another.
+- For front-end, connect the browser's elements to the actual code. In real time. Like when you focus on an element, it's highlighted in the browser.
