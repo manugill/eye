@@ -9,7 +9,7 @@ Productivity-focused user interfaces in XR are still a very nascent field, nobod
 We need three things:
 - A web browser with dev tools (working already, performance needs improvement).
 - A great terminal (rendering working, raycasting and keyboard events in progress).
-- A code editor with language server support that literally covers all your view and is a pleasure to use, not some pussy-ass 40-60 line length bullshit.
+- A code editor with language server support that literally covers all your view and is a pleasure to use, not just antiquated 40-60 lines constrained with in a small viewport. 1000s of line within your space at a time (of course only the closest few hundred will be at a readable font size).
   - All the files you're importing in your active file should be open in the background with connections leading to them.
   - The type information for the active token should be visible always without covering the code. Not sure about the UI for this yet.
     - Always visible type information for other tokens in the same line but with less detail.
