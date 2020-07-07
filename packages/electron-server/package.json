@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "electron": "^7.1.10",
+    "electron": "^7.2.4",
     "electron-devtools-installer": "^2.2.4",
     "keycode": "^2.2.0",
     "pixelmatch": "^5.1.0",
