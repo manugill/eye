@@ -5,8 +5,6 @@ import { Terminal } from 'xterm'
 import 'xterm/css/xterm.css'
 
 const meshProps = {}
-const position = [-300, 2, -500]
-const size = [600, 600]
 
 const classes = [
 	'.xterm-selection-layer',
@@ -15,15 +13,18 @@ const classes = [
 	'.xterm-cursor-layer',
 ]
 
-const ComponentTerminal = () => {
+const ComponentTerminal = ({
+	size = [720, 480],
+	position = [-300, 2, -500],
+}) => {
 	const refs = classes.map(() => useRef())
-	const materials = refs.map((ref) => ref.current)
+	const materials = refs.map(ref => ref.current)
 
 	// console.log('materials', materials)
 	// const addMaterial = (material) => setMaterials([...materials, material])
 
 	useMemo(() => {
-		if (materials.some((material) => !material)) {
+		if (materials.some(material => !material)) {
 			// do not run until all materials are ready (i.e. not undefined)
 			return undefined
 		}
@@ -46,19 +47,19 @@ const ComponentTerminal = () => {
 
 		// TODO: @Amit, please fix this
 		term.onSelectionChange(() => {
-			materials.map((material) => (material.map.needsUpdate = true))
+			materials.map(material => (material.map.needsUpdate = true))
 		})
 		term.onRender(() => {
-			materials.map((material) => (material.map.needsUpdate = true))
+			materials.map(material => (material.map.needsUpdate = true))
 		})
 		term.onCursorMove(() => {
-			materials.map((material) => (material.map.needsUpdate = true))
+			materials.map(material => (material.map.needsUpdate = true))
 		})
 		term.onLineFeed(() => {
-			materials.map((material) => (material.map.needsUpdate = true))
+			materials.map(material => (material.map.needsUpdate = true))
 		})
 		term.onKey(() => {
-			materials.map((material) => (material.map.needsUpdate = true))
+			materials.map(material => (material.map.needsUpdate = true))
 		})
 	}, [materials])
 
