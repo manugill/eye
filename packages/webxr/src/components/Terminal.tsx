@@ -15,16 +15,16 @@ const classes = [
 
 const ComponentTerminal = ({
 	size = [720, 480],
-	position = [-300, 2, -500],
+	position = [-375, 100, -500],
 }) => {
 	const refs = classes.map(() => useRef())
-	const materials = refs.map(ref => ref.current)
+	const materials = refs.map((ref) => ref.current)
 
 	// console.log('materials', materials)
 	// const addMaterial = (material) => setMaterials([...materials, material])
 
 	useMemo(() => {
-		if (materials.some(material => !material)) {
+		if (materials.some((material) => !material)) {
 			// do not run until all materials are ready (i.e. not undefined)
 			return undefined
 		}
@@ -33,9 +33,25 @@ const ComponentTerminal = ({
 			allowTransparency: true,
 			cursorBlink: true,
 		})
+		var prompt = () => {
+			var shellprompt = '$ '
+			term.write('\r\n' + shellprompt)
+		}
+
 		const el = document.querySelector('#terminal1')
 		term.open(el)
 		term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ')
+
+		term.onKey((key) => {
+			const char = key.domEvent.key
+			if (char === 'Enter') {
+				console.log('Enter pressed')
+				prompt()
+			} else {
+				term.write(char)
+				console.log(char)
+			}
+		})
 
 		classes.map((className, index) => {
 			const material = materials[index]
@@ -47,19 +63,19 @@ const ComponentTerminal = ({
 
 		// TODO: @Amit, please fix this
 		term.onSelectionChange(() => {
-			materials.map(material => (material.map.needsUpdate = true))
+			materials.map((material) => (material.map.needsUpdate = true))
 		})
 		term.onRender(() => {
-			materials.map(material => (material.map.needsUpdate = true))
+			materials.map((material) => (material.map.needsUpdate = true))
 		})
 		term.onCursorMove(() => {
-			materials.map(material => (material.map.needsUpdate = true))
+			materials.map((material) => (material.map.needsUpdate = true))
 		})
 		term.onLineFeed(() => {
-			materials.map(material => (material.map.needsUpdate = true))
+			materials.map((material) => (material.map.needsUpdate = true))
 		})
 		term.onKey(() => {
-			materials.map(material => (material.map.needsUpdate = true))
+			materials.map((material) => (material.map.needsUpdate = true))
 		})
 	}, [materials])
 
