@@ -21,10 +21,10 @@ export default function App() {
 			<Canvas
 				tabIndex={0}
 				vr
-				onBlur={event => {
-					event.target.focus()
-					console.log('onBlur', event)
-				}}
+				// onBlur={event => {
+				// 	event.target.focus()
+				// 	console.log('onBlur', event)
+				// }}
 				onKeyDown={event => {
 					event.preventDefault()
 					event.persist()

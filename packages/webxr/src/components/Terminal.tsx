@@ -1,8 +1,8 @@
 import * as THREE from 'three'
-import React, { useState, useRef, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useThree, ReactThreeFiber } from 'react-three-fiber'
-import { Terminal } from 'xterm'
-import 'xterm/css/xterm.css'
+
+import createTerminal from '../fn/createTerminal'
 
 const meshProps = {}
 
@@ -29,52 +29,46 @@ const ComponentTerminal = ({
 			return undefined
 		}
 
-		var term = new Terminal({
-			allowTransparency: true,
-			cursorBlink: true,
-		})
-		var prompt = () => {
-			var shellprompt = '$ '
-			term.write('\r\n' + shellprompt)
-		}
+		const { terminal, element } = createTerminal()
 
-		const el = document.querySelector('#terminal1')
-		term.open(el)
-		term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ')
+		terminal.write('hello')
 
-		term.onKey((key) => {
+		setInterval(() => terminal.write('2'), 1000)
+
+		terminal.onKey((key) => {
+			console.log('char', key.domEvent.key, key)
+
 			const char = key.domEvent.key
 			if (char === 'Enter') {
 				console.log('Enter pressed')
-				prompt()
+				// prompt()
 			} else {
-				term.write(char)
+				terminal.write(char)
 				console.log(char)
 			}
 		})
 
 		classes.map((className, index) => {
 			const material = materials[index]
-			const canvas: HTMLCanvasElement = el.querySelector(className)
+			const canvas: HTMLCanvasElement = element.querySelector(className)
 			const texture = new THREE.Texture(canvas)
 
 			material.setValues({ map: texture, transparent: true })
 		})
 
-		// TODO: @Amit, please fix this
-		term.onSelectionChange(() => {
+		terminal.onSelectionChange(() => {
 			materials.map((material) => (material.map.needsUpdate = true))
 		})
-		term.onRender(() => {
+		terminal.onRender(() => {
 			materials.map((material) => (material.map.needsUpdate = true))
 		})
-		term.onCursorMove(() => {
+		terminal.onCursorMove(() => {
 			materials.map((material) => (material.map.needsUpdate = true))
 		})
-		term.onLineFeed(() => {
+		terminal.onLineFeed(() => {
 			materials.map((material) => (material.map.needsUpdate = true))
 		})
-		term.onKey(() => {
+		terminal.onKey(() => {
 			materials.map((material) => (material.map.needsUpdate = true))
 		})
 	}, [materials])
