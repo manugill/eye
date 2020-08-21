@@ -1,10 +1,23 @@
 import * as THREE from 'three'
-import React, { useState, useRef, useCallback, useMemo } from 'react'
+import React, { useEffect, useRef, useMemo } from 'react'
 import { useThree, ReactThreeFiber } from 'react-three-fiber'
 import { Terminal } from 'xterm'
 import 'xterm/css/xterm.css'
 
 const meshProps = {}
+
+var term = new Terminal({
+	allowTransparency: true,
+	cursorBlink: true,
+})
+var prompt = () => {
+	var shellprompt = '$ '
+	term.write('\r\n' + shellprompt)
+}
+const el = document.querySelector('#terminal1')
+term.open(el)
+
+term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ')
 
 const classes = [
 	'.xterm-selection-layer',
@@ -13,13 +26,16 @@ const classes = [
 	'.xterm-cursor-layer',
 ]
 
+// term.onData((data) => {
+// 	console.log(data)
+// })
+
 const ComponentTerminal = ({
 	size = [720, 480],
 	position = [-375, 100, -500],
 }) => {
 	const refs = classes.map(() => useRef())
 	const materials = refs.map((ref) => ref.current)
-
 	// console.log('materials', materials)
 	// const addMaterial = (material) => setMaterials([...materials, material])
 
@@ -29,30 +45,6 @@ const ComponentTerminal = ({
 			return undefined
 		}
 
-		var term = new Terminal({
-			allowTransparency: true,
-			cursorBlink: true,
-		})
-		var prompt = () => {
-			var shellprompt = '$ '
-			term.write('\r\n' + shellprompt)
-		}
-
-		const el = document.querySelector('#terminal1')
-		term.open(el)
-		term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ')
-
-		term.onKey((key) => {
-			const char = key.domEvent.key
-			if (char === 'Enter') {
-				console.log('Enter pressed')
-				prompt()
-			} else {
-				term.write(char)
-				console.log(char)
-			}
-		})
-
 		classes.map((className, index) => {
 			const material = materials[index]
 			const canvas: HTMLCanvasElement = el.querySelector(className)
@@ -61,8 +53,20 @@ const ComponentTerminal = ({
 			material.setValues({ map: texture, transparent: true })
 		})
 
+		term.onKey((key) => {
+			var char = key.domEvent.key
+			console.log(key)
+			if (char === '') {
+				console.log('Enter pressed')
+				prompt()
+			} else {
+				term.write(char)
+			}
+		})
+
 		// TODO: @Amit, please fix this
 		term.onSelectionChange(() => {
+			console.log('onSelectionChange')
 			materials.map((material) => (material.map.needsUpdate = true))
 		})
 		term.onRender(() => {
@@ -77,6 +81,9 @@ const ComponentTerminal = ({
 		term.onKey(() => {
 			materials.map((material) => (material.map.needsUpdate = true))
 		})
+		term.onData(() => {
+			materials.map((material) => (material.map.needsUpdate = true))
+		})
 	}, [materials])
 
 	return (
@@ -85,7 +92,6 @@ const ComponentTerminal = ({
 				<mesh
 					key={index}
 					position={position}
-					{...meshProps}
 					// raycast={raycast}
 				>
 					<planeGeometry attach='geometry' args={size} />

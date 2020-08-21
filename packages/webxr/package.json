@@ -2,7 +2,7 @@
 	"name": "webxr",
 	"private": true,
 	"scripts": {
-		"start": "npm run dev",
+		"start": "yarn run dev",
 		"dev": "parcel src/index.html -p 3000",
 		"start2": "react-app-rewired start",
 		"build": "parcel build src/index.html -p 3000"
@@ -22,10 +22,10 @@
 		"react-dom": "^16.12.0",
 		"react-hot-keys": "^2.5.2",
 		"react-scripts": "^3.3.0",
-		"react-three-fiber": "^4.0.11",
+		"react-three-fiber": "^4.2.20",
 		"socket.io-client": "^2.3.0",
-		"three": "^0.112.1",
-		"xterm": "^4.6.0",
+		"three": "^0.119.1",
+		"xterm": "^4.5.0",
 		"xterm-addon-webgl": "^0.7.0"
 	},
 	"devDependencies": {

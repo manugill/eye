@@ -5,19 +5,19 @@ import io from 'socket.io-client'
 
 import vrRaycast, { isClosest } from './vrRaycast'
 
-const keyboardEvent = event => {
+const keyboardEvent = (event) => {
 	const keyFilter = ['Control', 'Shift', 'Alt', 'Meta', 'Command']
 	const keys = [
 		event.ctrlKey && 'Control',
 		event.shiftKey && 'Shift',
 		event.altKey && 'Alt',
 		event.metaKey && 'Command',
-		keyFilter.some(k => k === event.key)
+		keyFilter.some((k) => k === event.key)
 			? undefined
 			: event.key.startsWith('Arrow')
 			? event.key.substr(5)
 			: event.key,
-	].filter(k => !!k)
+	].filter((k) => !!k)
 	return {
 		keyCode: keys.join('+'),
 
@@ -30,7 +30,7 @@ const keyboardEvent = event => {
 	}
 }
 
-const mouseEvent = mesh => (resolution, event) => {
+const mouseEvent = (mesh) => (resolution, event) => {
 	if (!mesh) return { type: 'mouseMove', x: 0, y: 0, button: 'left' }
 	const [w, h] = resolution
 	const { width, height } = mesh.geometry.parameters
@@ -92,7 +92,7 @@ const Browser = ({
 		[],
 	)
 
-	const materialFunction = (isDevTools = false) => material => {
+	const materialFunction = (isDevTools = false) => (material) => {
 		if (!material) return
 		console.log('actualling creating material', material)
 		// const mesh = material.parent
@@ -102,7 +102,7 @@ const Browser = ({
 		const loader = new THREE.TextureLoader()
 		const texture = loader.load(
 			`https://images.unsplash.com/source-404?fit=crop&fm=jpg&q=60&w=${resolution[0]}&h=${resolution[1]}`,
-			texture => {
+			(texture) => {
 				socket.on('paint', ({ devTools, paint: { time, buffer, rect } }) => {
 					if (devTools !== isDevTools) return
 					const receivedTime = Date.now()
@@ -143,11 +143,11 @@ const Browser = ({
 
 	const makeProps = (devTools = false) => {
 		console.log('devTools hello', devTools)
-		const emit = event => socket.emit('event', { ...event, devTools })
+		const emit = (event) => socket.emit('event', { ...event, devTools })
 		const m = devTools ? meshDevTools : mesh
 		const mouse = mouseEvent(m)
 		const eventProps = {
-			onKeyDown: event => {
+			onKeyDown: (event) => {
 				const keyEvent = keyboardEvent(event)
 				console.log('onKeyDown', keyEvent, m)
 				emit(keyEvent)
@@ -158,18 +158,18 @@ const Browser = ({
 						devTools,
 					})
 			},
-			onKeyUp: event => {
+			onKeyUp: (event) => {
 				const keyEvent = keyboardEvent(event)
 				emit(keyEvent)
 			},
-			onPointerMove: event => {
+			onPointerMove: (event) => {
 				if (!isClosest(m)) return
 				emit({
 					type: 'mouseMove',
 					...mouse(resolution, event),
 				})
 			},
-			onPointerDown: event => {
+			onPointerDown: (event) => {
 				if (!isClosest(m)) return
 				console.log('onPointerDown', mouse(resolution, event))
 				emit({
@@ -177,28 +177,28 @@ const Browser = ({
 					...mouse(resolution, event),
 				})
 			},
-			onPointerUp: event => {
+			onPointerUp: (event) => {
 				if (!isClosest(m)) return
 				emit({
 					type: 'mouseUp',
 					...mouse(resolution, event),
 				})
 			},
-			onPointerOut: event => {
+			onPointerOut: (event) => {
 				// if (!isClosest(m)) return
 				emit({
 					type: 'mouseLeave',
 					...mouse(resolution, event),
 				})
 			},
-			onPointerOver: event => {
+			onPointerOver: (event) => {
 				if (!isClosest(m)) return
 				emit({
 					type: 'mouseEnter',
 					...mouse(resolution, event),
 				})
 			},
-			onWheel: event => {
+			onWheel: (event) => {
 				if (!isClosest(m)) return
 				emit({
 					type: 'mouseWheel',

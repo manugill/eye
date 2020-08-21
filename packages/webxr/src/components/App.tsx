@@ -21,28 +21,28 @@ export default function App() {
 			<Canvas
 				tabIndex={0}
 				vr
-				onBlur={event => {
-					event.target.focus()
-					console.log('onBlur', event)
-				}}
-				onKeyDown={event => {
+				// onBlur={(event) => {
+				// 	event.target.focus()
+				// 	console.log('onBlur', event)
+				// }}
+				onKeyDown={(event) => {
 					event.preventDefault()
 					event.persist()
 					const handler = focus && focus.__handlers && focus.__handlers.keyDown
 					if (handler) handler(event)
 				}}
-				// onKeyPress={event => {
-				// 	event.preventDefault()
-				// 	event.persist()
-				// 	console.log('onKeyPress', event)
-				// }}
-				onKeyUp={event => {
+				onKeyPress={(event) => {
+					event.preventDefault()
+					event.persist()
+					console.log('onKeyPress', event)
+				}}
+				onKeyUp={(event) => {
 					event.preventDefault()
 					event.persist()
 					const handler = focus && focus.__handlers && focus.__handlers.keyUp
 					if (handler) handler(event)
 				}}
-				onWheel={event => {
+				onWheel={(event) => {
 					if (!context) return
 					event.persist()
 					if (event.shiftKey) {
@@ -53,7 +53,7 @@ export default function App() {
 						context.events.onWheel(event)
 					}
 				}}
-				onPointerDown={event => {
+				onPointerDown={(event) => {
 					if (!context) return
 					event.persist()
 					context.events.onPointerDown(event)
@@ -63,18 +63,18 @@ export default function App() {
 						context.gl.domElement.requestPointerLock()
 					}
 				}}
-				onPointerMove={event => {
+				onPointerMove={(event) => {
 					if (!context) return
 					// event.persist()
 					context.events.onPointerMove(event)
 					eventToXY(event)
 				}}
-				onContextMenu={event => {
+				onContextMenu={(event) => {
 					event.preventDefault()
 				}}
-				onCreated={context => {
+				onCreated={(context) => {
 					setContext(context)
-					const sessionCallback = session => {
+					const sessionCallback = (session) => {
 						cursor.setX(0)
 						cursor.setY(0)
 						console.log('session', session, context)
