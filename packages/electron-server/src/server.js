@@ -18,13 +18,13 @@ const createWindow = ({
   const size = { width: parseInt(width), height: parseInt(height) };
   const options = {
     ...size,
-    show: true,
+    show: false,
     frame: false,
     transparent: true,
     acceptFirstMouse: true,
     disableAutoHideCursor: true,
     webPreferences: {
-      offscreen: false,
+      offscreen: true,
       scrollBounce: true,
       backgroundThrottling: false,
     },
