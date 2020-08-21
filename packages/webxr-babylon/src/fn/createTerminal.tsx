@@ -1,5 +1,5 @@
 import { Terminal, ITerminalOptions } from 'xterm';
-// import { WebglAddon } from 'xterm-addon-webgl';
+import { WebglAddon } from 'xterm-addon-webgl';
 import * as WebfontAddon from 'xterm-webfont';
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
@@ -7,7 +7,7 @@ import 'xterm/css/xterm.css';
 const parent = document.querySelector('#terminals');
 
 export default async (
-  terminalOptions: ITerminalOptions,
+  terminalOptions: ITerminalOptions & { useWebgl?: boolean },
   onElement?: (element: HTMLDivElement) => void,
 ): Promise<[Terminal, HTMLDivElement]> => {
   const element = document.createElement('div');
@@ -15,11 +15,15 @@ export default async (
 
   if (onElement) onElement(element);
 
+  const { useWebgl, ...options } = terminalOptions;
   var terminal = new Terminal({
     allowTransparency: true,
     cursorBlink: true,
     fontFamily: 'Fira Code',
-    ...terminalOptions,
+    theme: {
+      background: 'rgba(0, 0, 0, 0)',
+    },
+    ...options,
   });
   const fitAddon = new FitAddon();
   terminal.loadAddon(fitAddon);
@@ -28,6 +32,8 @@ export default async (
   // terminal.open(element);
   // the custom font loading requires awaiting
   await (terminal as any).loadWebfontAndOpen(element);
+
+  if (useWebgl) terminal.loadAddon(new WebglAddon());
 
   fitAddon.fit();
 

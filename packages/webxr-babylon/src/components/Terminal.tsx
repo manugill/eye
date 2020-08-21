@@ -1,25 +1,13 @@
-import React, {
-  useMemo,
-  useEffect,
-  useRef,
-  useState,
-  MutableRefObject,
-} from 'react';
+import React, { useEffect, useRef, MutableRefObject } from 'react';
 import { useAsyncMemo } from 'use-async-memo';
 import { CreatedInstance } from 'react-babylonjs';
 import { Vector3, Texture, DynamicTexture } from '@babylonjs/core';
 
 import createTerminal from '../fn/createTerminal';
 
-type TextureRef = MutableRefObject<CreatedInstance<Texture>>;
 type DynamicTextureRef = MutableRefObject<CreatedInstance<DynamicTexture>>;
 
-const classes = [
-  '.xterm-text-layer',
-  '.xterm-selection-layer',
-  '.xterm-link-layer',
-  '.xterm-cursor-layer',
-];
+const USE_XTERM_WEBGL = true;
 
 const ComponentTerminal = ({
   width = 8,
@@ -27,14 +15,16 @@ const ComponentTerminal = ({
   fontSize = 20,
   sizeMultiplier = 1,
 }) => {
-  const textureRefs = classes.map(useRef) as TextureRef[];
-  const dynamicTextureRefs = classes.map(useRef) as DynamicTextureRef[];
+  const textureRefs = [...Array(USE_XTERM_WEBGL ? 4 : 3)].map(
+    useRef,
+  ) as DynamicTextureRef[];
 
   // create terminal
   const termData = useAsyncMemo(async () => {
     const [terminal, element] = await createTerminal(
       {
         fontSize: fontSize * sizeMultiplier,
+        useWebgl: USE_XTERM_WEBGL,
       },
       (element) => {
         element.style.width = `${width * 100 * sizeMultiplier}px`;
@@ -59,6 +49,7 @@ const ComponentTerminal = ({
     return {
       terminal,
       element,
+      canvasElements: [...screenElement.querySelectorAll('canvas')],
 
       // the actual created terminal size is different
       // slightly smaller than first defined
@@ -67,101 +58,67 @@ const ComponentTerminal = ({
     };
   }, []);
 
-  console.log('termData', termData);
+  if (termData) {
+    const core = (termData.terminal as any)._core;
+    console.log('termData', termData.terminal);
+    console.log('_onRefreshRequest', core._renderService);
+    core._onRender._listeners.push((...params) => {
+      console.log('params', params);
+    });
+  }
 
   useEffect(() => {
     if (!termData) return;
 
-    const { terminal, element, width, height } = termData;
-    const textures = textureRefs.map((ref) => ref.current.hostInstance);
-    const dynamicTextures = dynamicTextureRefs.map(
-      (ref) => ref.current.hostInstance,
-    );
-    console.log('hello', ...textures, textures[0]);
+    const { terminal } = termData;
 
-    classes.forEach((className, index) => {
-      const canvas: HTMLCanvasElement = element.querySelector(className);
-      const context = canvas.getContext('2d');
-      const texture = textures[index];
-      const dynamicTexture = dynamicTextures[index];
+    textureRefs
+      .map((ref) => ref.current?.hostInstance)
+      .filter((texture) => !!texture)
+      .forEach((texture, index) => {
+        const updateTexture = () => texture.update();
+        updateTexture();
 
-      const updateTexture = () => {
-        const imageData = context.getImageData(0, 0, width * 100, height * 100);
-        console.log('imageData', imageData);
-
-        // update basic texture (slow as it requires a data url conversion)
-        const dataUrl = canvas.toDataURL();
-        let img = new Image();
-        texture.updateURL(dataUrl);
-
-        // setup dynamic texture (WIP, not working, but should be faster)
-        const dynamicTextureContext = dynamicTexture.getContext();
-        dynamicTextureContext.putImageData(imageData, 0, 0);
-        dynamicTexture.update();
-      };
-
-      updateTexture();
-
-      terminal.onRender(() => updateTexture());
-      if (className === '.xterm-selection-layer')
+        terminal.onRender(() => updateTexture());
         terminal.onSelectionChange(() => {
           updateTexture();
           console.log('selection change');
         });
-      // terminal.onCursorMove(() => updateTexture());
-      // terminal.onLineFeed(() => updateTexture());
-      // terminal.onKey(() => updateTexture());
-    });
+      });
   }, [termData]);
 
   return (
     <>
-      {textureRefs.map((ref, i) => (
-        <plane
-          key={i}
-          name="plane"
-          width={termData?.width || width}
-          height={termData?.height || height}
-          position={new Vector3(0, -2, 0)}
-        >
-          <standardMaterial
-            useAlphaFromDiffuseTexture={true}
-            name="material"
-            backFaceCulling={false}
+      {termData?.canvasElements.map((ref, i) => {
+        console.log('canvasElements', termData.canvasElements);
+        return (
+          <plane
+            key={i}
+            name="plane"
+            width={termData?.width || width}
+            height={termData?.height || height}
+            position={new Vector3(0, -2, 0)}
           >
-            <texture
-              ref={ref}
-              hasAlpha={true}
-              assignTo="diffuseTexture"
-              url={'IMAGE_HERE'}
-            />
-          </standardMaterial>
-        </plane>
-      ))}
-
-      {dynamicTextureRefs.map((ref, i) => (
-        <plane
-          key={i}
-          name="plane"
-          width={termData?.width || width}
-          height={termData?.height || height}
-          position={new Vector3(0, 2, 0)}
-        >
-          <standardMaterial
-            useAlphaFromDiffuseTexture={true}
-            name="material"
-            backFaceCulling={false}
-          >
-            <dynamicTexture
-              assignTo="diffuseTexture"
-              name="texture"
-              ref={ref}
-              generateMipMaps={true}
-              options={{ alpha: true }}
-            />
-          </standardMaterial>
-        </plane>
-      ))}
+            <standardMaterial
+              name="material"
+              useAlphaFromDiffuseTexture={true}
+              backFaceCulling={false}
+            >
+              <dynamicTexture
+                ref={textureRefs[i]}
+                name="texture"
+                assignTo="diffuseTexture"
+                hasAlpha={true}
+                generateMipMaps={true}
+                // giving the canvas element to options key automatically attaches it to the dynamic texture (saves us a bunch of work)
+                // https://github.com/BabylonJS/Babylon.js/blob/master/src/Materials/Textures/dynamicTexture.ts#L44
+                options={termData.canvasElements[i]}
+                // options={{}}
+              />
+            </standardMaterial>
+          </plane>
+        );
+      })}
     </>
   );
 };

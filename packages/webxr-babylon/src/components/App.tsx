@@ -4,6 +4,13 @@ import { Vector3 } from '@babylonjs/core';
 
 import Terminal from './Terminal';
 
+const lightVectors = [
+  Vector3.Up(),
+  Vector3.Down(),
+  Vector3.Left(),
+  Vector3.Right(),
+];
+
 const App = () => {
   return (
     <Engine canvasId="main-canvas" antialias={true}>
@@ -20,26 +27,15 @@ const App = () => {
           position={new Vector3(0, 0, -10)}
           setTarget={[Vector3.Zero()]}
         />
-        <hemisphericLight
-          name="light1"
-          intensity={0.7}
-          direction={Vector3.Up()}
-        />
-        <hemisphericLight
-          name="light1"
-          intensity={0.7}
-          direction={Vector3.Down()}
-        />
-        <hemisphericLight
-          name="light1"
-          intensity={0.7}
-          direction={Vector3.Left()}
-        />
-        <hemisphericLight
-          name="light1"
-          intensity={0.7}
-          direction={Vector3.Right()}
-        />
+
+        {lightVectors.map((vector, i) => (
+          <hemisphericLight
+            key={i}
+            name="light"
+            intensity={0.5}
+            direction={vector}
+          />
+        ))}
 
         <Terminal />
       </Scene>

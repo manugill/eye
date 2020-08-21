@@ -3,15 +3,27 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject"
   },
   "dependencies": {
     "@babylonjs/core": "^4.1.0",
     "@babylonjs/gui": "^4.1.0",
     "@babylonjs/loaders": "^4.1.0",
+    "babylonjs-hook": "^0.0.1",
+    "react": "^16.13.1",
+    "react-babylonjs": "^2.2.3",
+    "react-dom": "^16.13.1",
+    "react-reconciler": "^0.25.1",
+    "use-async-memo": "^1.2.2",
+    "xterm": "^4.8.1",
+    "xterm-addon-fit": "^0.4.0",
+    "xterm-addon-webgl": "^0.8.0",
+    "xterm-webfont": "^2.0.0"
+  },
+  "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -19,17 +31,11 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
-    "babylonjs-hook": "^0.0.1",
-    "react": "^16.13.1",
-    "react-babylonjs": "^2.2.3",
-    "react-dom": "^16.13.1",
-    "react-reconciler": "^0.25.1",
+    "customize-cra": "^1.0.0",
+    "customize-cra-react-refresh": "^1.1.0",
+    "react-app-rewired": "^2.1.6",
     "react-scripts": "3.4.3",
-    "typescript": "~3.7.2",
-    "use-async-memo": "^1.2.2",
-    "xterm": "^4.8.1",
-    "xterm-addon-fit": "^0.4.0",
-    "xterm-webfont": "^2.0.0"
+    "typescript": "~3.7.2"
   },
   "eslintConfig": {
     "extends": "react-app"
