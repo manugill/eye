@@ -49,20 +49,6 @@ const ComponentTerminal = ({
 			return undefined
 		}
 
-<<<<<<< HEAD
-		classes.map((className, index) => {
-			const material = materials[index]
-			const canvas: HTMLCanvasElement = el.querySelector(className)
-			const texture = new THREE.Texture(canvas)
-
-			material.setValues({ map: texture, transparent: true })
-		})
-
-		term.onKey((key) => {
-			var char = key.domEvent.key
-			console.log(key)
-			if (char === '') {
-=======
 		const { terminal, element } = createTerminal()
 
 		terminal.write('hello')
@@ -74,19 +60,9 @@ const ComponentTerminal = ({
 
 			const char = key.domEvent.key
 			if (char === 'Enter') {
->>>>>>> 1d26d4080b636e410d4c938ffbecfa5cea6bcc7f
 				console.log('Enter pressed')
 				// prompt()
 			} else {
-<<<<<<< HEAD
-				term.write(char)
-			}
-		})
-
-		// TODO: @Amit, please fix this
-		term.onSelectionChange(() => {
-			console.log('onSelectionChange')
-=======
 				terminal.write(char)
 				console.log(char)
 			}
@@ -101,7 +77,6 @@ const ComponentTerminal = ({
 		})
 
 		terminal.onSelectionChange(() => {
->>>>>>> 1d26d4080b636e410d4c938ffbecfa5cea6bcc7f
 			materials.map((material) => (material.map.needsUpdate = true))
 		})
 		terminal.onRender(() => {

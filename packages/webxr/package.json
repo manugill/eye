@@ -3,9 +3,8 @@
 	"private": true,
 	"scripts": {
 		"start": "yarn run dev",
-		"dev": "parcel src/index.html -p 3000",
-		"start2": "react-app-rewired start",
-		"build": "parcel build src/index.html -p 3000"
+		"dev": "parcel src/index.html -p 2999",
+		"build": "parcel build src/index.html -p 2999"
 	},
 	"dependencies": {
 		"@types/lodash": "^4.14.149",
@@ -21,21 +20,12 @@
 		"react-app-rewired": "^2.1.5",
 		"react-dom": "^16.13.1",
 		"react-hot-keys": "^2.5.2",
-<<<<<<< HEAD
-		"react-scripts": "^3.3.0",
-		"react-three-fiber": "^4.2.20",
-		"socket.io-client": "^2.3.0",
-		"three": "^0.119.1",
-		"xterm": "^4.5.0",
-		"xterm-addon-webgl": "^0.7.0"
-=======
 		"react-scripts": "^3.4.3",
 		"react-three-fiber": "^4.2.20",
 		"socket.io-client": "^2.3.0",
 		"three": "0.119.1",
 		"xterm": "^4.8.1",
 		"xterm-addon-webgl": "^0.8.0"
->>>>>>> 1d26d4080b636e410d4c938ffbecfa5cea6bcc7f
 	},
 	"devDependencies": {
 		"typescript": "^3.7.5"
