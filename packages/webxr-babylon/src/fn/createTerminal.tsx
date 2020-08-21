@@ -18,7 +18,7 @@ export default async (
   var terminal = new Terminal({
     allowTransparency: true,
     cursorBlink: true,
-    fontFamily: 'DM Mono',
+    fontFamily: 'Fira Code',
     ...terminalOptions,
   });
   const fitAddon = new FitAddon();

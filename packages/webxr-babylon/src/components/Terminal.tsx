@@ -43,7 +43,7 @@ const ComponentTerminal = ({
     );
 
     const prompt = () => terminal.write('\r\n' + '$ ');
-    terminal.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ');
+    terminal.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ 😃  ');
     terminal.onKey((key) => {
       var char = key.domEvent.key;
       console.log(key);
@@ -72,28 +72,21 @@ const ComponentTerminal = ({
   useEffect(() => {
     if (!termData) return;
 
-    const { terminal } = termData;
+    const { terminal, element, width, height } = termData;
     const textures = textureRefs.map((ref) => ref.current.hostInstance);
     const dynamicTextures = dynamicTextureRefs.map(
       (ref) => ref.current.hostInstance,
     );
     console.log('hello', ...textures, textures[0]);
 
-    classes.map((className, index) => {
-      const canvas: HTMLCanvasElement = termData.element.querySelector(
-        className,
-      );
+    classes.forEach((className, index) => {
+      const canvas: HTMLCanvasElement = element.querySelector(className);
       const context = canvas.getContext('2d');
       const texture = textures[index];
       const dynamicTexture = dynamicTextures[index];
 
       const updateTexture = () => {
-        const imageData = context.getImageData(
-          0,
-          0,
-          termData.width * 100,
-          termData.height * 100,
-        );
+        const imageData = context.getImageData(0, 0, width * 100, height * 100);
         console.log('imageData', imageData);
 
         // update basic texture (slow as it requires a data url conversion)
