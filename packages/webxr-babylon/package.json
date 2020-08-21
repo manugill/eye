@@ -2,6 +2,12 @@
   "name": "neweye",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
     "@babylonjs/core": "^4.1.0",
     "@babylonjs/gui": "^4.1.0",
@@ -20,13 +26,10 @@
     "react-reconciler": "^0.25.1",
     "react-scripts": "3.4.3",
     "typescript": "~3.7.2",
-    "xterm": "^4.8.1"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "use-async-memo": "^1.2.2",
+    "xterm": "^4.8.1",
+    "xterm-addon-fit": "^0.4.0",
+    "xterm-webfont": "^2.0.0"
   },
   "eslintConfig": {
     "extends": "react-app"
