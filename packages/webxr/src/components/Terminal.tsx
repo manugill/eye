@@ -1,8 +1,12 @@
 import * as THREE from 'three'
+<<<<<<< HEAD
 import React, { useEffect, useRef, useMemo } from 'react'
+=======
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+>>>>>>> 1d26d4080b636e410d4c938ffbecfa5cea6bcc7f
 import { useThree, ReactThreeFiber } from 'react-three-fiber'
-import { Terminal } from 'xterm'
-import 'xterm/css/xterm.css'
+
+import createTerminal from '../fn/createTerminal'
 
 const meshProps = {}
 
@@ -45,6 +49,7 @@ const ComponentTerminal = ({
 			return undefined
 		}
 
+<<<<<<< HEAD
 		classes.map((className, index) => {
 			const material = materials[index]
 			const canvas: HTMLCanvasElement = el.querySelector(className)
@@ -57,9 +62,23 @@ const ComponentTerminal = ({
 			var char = key.domEvent.key
 			console.log(key)
 			if (char === '') {
+=======
+		const { terminal, element } = createTerminal()
+
+		terminal.write('hello')
+
+		setInterval(() => terminal.write('2'), 1000)
+
+		terminal.onKey((key) => {
+			console.log('char', key.domEvent.key, key)
+
+			const char = key.domEvent.key
+			if (char === 'Enter') {
+>>>>>>> 1d26d4080b636e410d4c938ffbecfa5cea6bcc7f
 				console.log('Enter pressed')
-				prompt()
+				// prompt()
 			} else {
+<<<<<<< HEAD
 				term.write(char)
 			}
 		})
@@ -67,18 +86,34 @@ const ComponentTerminal = ({
 		// TODO: @Amit, please fix this
 		term.onSelectionChange(() => {
 			console.log('onSelectionChange')
+=======
+				terminal.write(char)
+				console.log(char)
+			}
+		})
+
+		classes.map((className, index) => {
+			const material = materials[index]
+			const canvas: HTMLCanvasElement = element.querySelector(className)
+			const texture = new THREE.Texture(canvas)
+
+			material.setValues({ map: texture, transparent: true })
+		})
+
+		terminal.onSelectionChange(() => {
+>>>>>>> 1d26d4080b636e410d4c938ffbecfa5cea6bcc7f
 			materials.map((material) => (material.map.needsUpdate = true))
 		})
-		term.onRender(() => {
+		terminal.onRender(() => {
 			materials.map((material) => (material.map.needsUpdate = true))
 		})
-		term.onCursorMove(() => {
+		terminal.onCursorMove(() => {
 			materials.map((material) => (material.map.needsUpdate = true))
 		})
-		term.onLineFeed(() => {
+		terminal.onLineFeed(() => {
 			materials.map((material) => (material.map.needsUpdate = true))
 		})
-		term.onKey(() => {
+		terminal.onKey(() => {
 			materials.map((material) => (material.map.needsUpdate = true))
 		})
 		term.onData(() => {
