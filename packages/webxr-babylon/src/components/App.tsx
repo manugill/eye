@@ -1,8 +1,9 @@
-import React from 'react';
-import { Engine, Scene } from 'react-babylonjs';
-import { Vector3 } from '@babylonjs/core';
+import React, { useState } from "react";
+import { Engine, Scene } from "react-babylonjs";
+import { Vector3 } from "@babylonjs/core";
+import Hotkeys from "react-hot-keys";
 
-import Terminal from './Terminal';
+import Terminal from "./Terminal";
 
 const lightVectors = [
   Vector3.Up(),
@@ -11,15 +12,39 @@ const lightVectors = [
   Vector3.Right(),
 ];
 
+const keyboardInput = (input) => {
+  var output = {
+    1: function () {
+      return console.log("onKeyDown", input);
+    },
+    2: function () {
+      return console.log("onKeyUp");
+    },
+  };
+  return output[input.type]();
+};
+
+const MouseInput = (input) => {
+  console.log("mouse", input.type);
+};
+
 const App = () => {
+  const [mouseInput, setMouseInput] = useState(undefined);
+
   return (
     <Engine canvasId="main-canvas" antialias={true}>
       <Scene
+        onKeyboardObservable={(e) => {
+          keyboardInput(e);
+        }}
+        onPrePointerObservable={(e) => {
+          setMouseInput(e.type);
+        }}
         onMeshPicked={(...params) => {
-          console.log('onMeshPicked', ...params);
+          //   console.log("onMeshPicked", ...params);
         }}
         onSceneMount={(...params) => {
-          console.log('onSceneMount', ...params);
+          //   console.log("onSceneMount", ...params);
         }}
       >
         <flyCamera
@@ -36,8 +61,7 @@ const App = () => {
             direction={vector}
           />
         ))}
-
-        <Terminal />
+        <Terminal focus={mouseInput} />
       </Scene>
     </Engine>
   );

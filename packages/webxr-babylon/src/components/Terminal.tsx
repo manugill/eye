@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, MutableRefObject } from 'react';
-import { useAsyncMemo } from 'use-async-memo';
-import { CreatedInstance } from 'react-babylonjs';
-import { Vector3, Texture, DynamicTexture } from '@babylonjs/core';
+import React, { useEffect, useRef, MutableRefObject, useState } from "react";
+import { useAsyncMemo } from "use-async-memo";
+import { CreatedInstance } from "react-babylonjs";
+import { Vector3, Texture, DynamicTexture } from "@babylonjs/core";
 
-import createTerminal from '../fn/createTerminal';
+import createTerminal from "../fn/createTerminal";
 
 type DynamicTextureRef = MutableRefObject<CreatedInstance<DynamicTexture>>;
 
@@ -14,12 +14,19 @@ const ComponentTerminal = ({
   height = 4,
   fontSize = 20,
   sizeMultiplier = 1,
+  focus,
 }) => {
   const textureRefs = [...Array(USE_XTERM_WEBGL ? 4 : 3)].map(
-    useRef,
+    useRef
   ) as DynamicTextureRef[];
 
+  const [_focus, setFocus] = useState(false);
+
   // create terminal
+
+  // if (focus === 1) {
+  //   setFocus(true);
+  // }
   const termData = useAsyncMemo(async () => {
     const [terminal, element] = await createTerminal(
       {
@@ -29,27 +36,27 @@ const ComponentTerminal = ({
       (element) => {
         element.style.width = `${width * 100 * sizeMultiplier}px`;
         element.style.height = `${height * 100 * sizeMultiplier}px`;
-      },
+      }
     );
 
-    const prompt = () => terminal.write('\r\n' + '$ ');
-    terminal.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ 😃  ');
+    const prompt = () => terminal.write("\r\n" + "$ ");
+    terminal.write("Hello from \x1B[1;3;31mxterm.js\x1B[0m $ 😃  ");
     terminal.onKey((key) => {
       var char = key.domEvent.key;
-      console.log(key);
-      if (char === '' || char === 'Enter') {
-        console.log('Enter pressed');
+      // console.log(key);
+      if (char === "" || char === "Enter") {
+        console.log("Enter pressed");
         prompt();
       } else {
         terminal.write(char);
       }
     });
 
-    const screenElement = element.querySelector('.xterm-screen');
+    const screenElement = element.querySelector(".xterm-screen");
     return {
       terminal,
       element,
-      canvasElements: [...screenElement.querySelectorAll('canvas')],
+      canvasElements: [...screenElement.querySelectorAll("canvas")],
 
       // the actual created terminal size is different
       // slightly smaller than first defined
@@ -60,14 +67,16 @@ const ComponentTerminal = ({
 
   if (termData) {
     const core = (termData.terminal as any)._core;
-    console.log('termData', termData.terminal);
-    console.log('_onRefreshRequest', core._renderService);
+    console.log("termData", termData.terminal.focus);
+    // console.log("_onRefreshRequest", core._renderService);
     core._onRender._listeners.push((...params) => {
-      console.log('params', params);
+      //  console.log("params", params);
     });
   }
 
   useEffect(() => {
+    console.log("focus1", focus);
+
     if (!termData) return;
 
     const { terminal } = termData;
@@ -76,13 +85,20 @@ const ComponentTerminal = ({
       .map((ref) => ref.current?.hostInstance)
       .filter((texture) => !!texture)
       .forEach((texture, index) => {
-        const updateTexture = () => texture.update();
+        const updateTexture = () => {
+          texture.update();
+          if (_focus) {
+            terminal.focus();
+          }
+        };
         updateTexture();
 
-        terminal.onRender(() => updateTexture());
+        terminal.onRender(() => {
+          updateTexture();
+        });
         terminal.onSelectionChange(() => {
           updateTexture();
-          console.log('selection change');
+          console.log("selection change");
         });
       });
   }, [termData]);
@@ -90,7 +106,7 @@ const ComponentTerminal = ({
   return (
     <>
       {termData?.canvasElements.map((ref, i) => {
-        console.log('canvasElements', termData.canvasElements);
+        // console.log("canvasElements", termData.canvasElements);
         return (
           <plane
             key={i}
