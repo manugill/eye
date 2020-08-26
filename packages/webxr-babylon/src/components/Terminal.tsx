@@ -1,34 +1,49 @@
-import React, { useEffect, useRef, MutableRefObject, useState } from "react";
-import { useAsyncMemo } from "use-async-memo";
-import { CreatedInstance } from "react-babylonjs";
-import { Vector3, Texture, DynamicTexture } from "@babylonjs/core";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  MutableRefObject,
+  useState,
+} from 'react';
+import { useAsyncMemo } from 'use-async-memo';
+import { useBabylonScene, useClick, CreatedInstance } from 'react-babylonjs';
+import { Vector3, Texture, DynamicTexture } from '@babylonjs/core';
 
-import createTerminal from "../fn/createTerminal";
+import createTerminal from '../fn/createTerminal';
+import FocusIndicator from './FocusIndicator';
 
 type DynamicTextureRef = MutableRefObject<CreatedInstance<DynamicTexture>>;
 
 const USE_XTERM_WEBGL = true;
 
+(window as any).terminals = [];
+
 const ComponentTerminal = ({
+  position = new Vector3(0, 0, 0),
   width = 8,
   height = 4,
   fontSize = 20,
   sizeMultiplier = 1,
-  focus,
+  focus = false,
+  setFocus = () => undefined,
+}: {
+  position?: Vector3;
+  width?: number;
+  height?: number;
+  fontSize?: number;
+  sizeMultiplier?: number;
+  focus?: boolean;
+  setFocus?: () => void;
 }) => {
+  const scene = useBabylonScene();
+
   const textureRefs = [...Array(USE_XTERM_WEBGL ? 4 : 3)].map(
-    useRef
+    useRef,
   ) as DynamicTextureRef[];
 
-  const [_focus, setFocus] = useState(false);
-
   // create terminal
-
-  // if (focus === 1) {
-  //   setFocus(true);
-  // }
-  const termData = useAsyncMemo(async () => {
-    const [terminal, element] = await createTerminal(
+  const termData = useMemo(() => {
+    const [terminal, element] = createTerminal(
       {
         fontSize: fontSize * sizeMultiplier,
         useWebgl: USE_XTERM_WEBGL,
@@ -36,27 +51,29 @@ const ComponentTerminal = ({
       (element) => {
         element.style.width = `${width * 100 * sizeMultiplier}px`;
         element.style.height = `${height * 100 * sizeMultiplier}px`;
-      }
+      },
     );
 
-    const prompt = () => terminal.write("\r\n" + "$ ");
-    terminal.write("Hello from \x1B[1;3;31mxterm.js\x1B[0m $ 😃  ");
+    (window as any).terminals.push(terminal); //
+
+    const prompt = () => terminal.write('\r\n' + '$ ');
+    terminal.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ 😃  ');
     terminal.onKey((key) => {
       var char = key.domEvent.key;
       // console.log(key);
-      if (char === "" || char === "Enter") {
-        console.log("Enter pressed");
+      if (char === '' || char === 'Enter') {
+        console.log('Enter pressed');
         prompt();
       } else {
         terminal.write(char);
       }
     });
 
-    const screenElement = element.querySelector(".xterm-screen");
+    const screenElement = element.querySelector('.xterm-screen');
     return {
       terminal,
       element,
-      canvasElements: [...screenElement.querySelectorAll("canvas")],
+      canvasElements: [...screenElement.querySelectorAll('canvas')],
 
       // the actual created terminal size is different
       // slightly smaller than first defined
@@ -65,9 +82,12 @@ const ComponentTerminal = ({
     };
   }, []);
 
+  const w = termData?.width || width;
+  const h = termData?.height || height;
+
   if (termData) {
     const core = (termData.terminal as any)._core;
-    console.log("termData", termData.terminal.focus);
+    console.log('termData', termData.terminal);
     // console.log("_onRefreshRequest", core._renderService);
     core._onRender._listeners.push((...params) => {
       //  console.log("params", params);
@@ -75,7 +95,7 @@ const ComponentTerminal = ({
   }
 
   useEffect(() => {
-    console.log("focus1", focus);
+    console.log('focus1', focus);
 
     if (!termData) return;
 
@@ -87,9 +107,6 @@ const ComponentTerminal = ({
       .forEach((texture, index) => {
         const updateTexture = () => {
           texture.update();
-          if (_focus) {
-            terminal.focus();
-          }
         };
         updateTexture();
 
@@ -98,23 +115,42 @@ const ComponentTerminal = ({
         });
         terminal.onSelectionChange(() => {
           updateTexture();
-          console.log("selection change");
+          console.log('selection change');
         });
       });
   }, [termData]);
 
+  const [clickRef] = useClick((action) => {
+    setFocus();
+    // console.log('termData', termData);
+
+    const { pickedPoint } = scene.pick(scene.pointerX, scene.pointerY);
+
+    const x = pickedPoint.x - position.x + w / 2;
+    const y = -pickedPoint.y + position.y + h / 2;
+    const xPx = x * 100 * sizeMultiplier;
+    const yPx = y * 100 * sizeMultiplier;
+  });
+
   return (
     <>
+      <FocusIndicator focus={focus} position={position} width={w} height={h} />
+      <plane
+        ref={clickRef}
+        name="plane"
+        width={w}
+        height={h}
+        position={position}
+      >
+        <standardMaterial name="material">
+          <baseTexture />
+        </standardMaterial>
+      </plane>
+
       {termData?.canvasElements.map((ref, i) => {
         // console.log("canvasElements", termData.canvasElements);
         return (
-          <plane
-            key={i}
-            name="plane"
-            width={termData?.width || width}
-            height={termData?.height || height}
-            position={new Vector3(0, -2, 0)}
-          >
+          <plane key={i} name="plane" width={w} height={h} position={position}>
             <standardMaterial
               name="material"
               useAlphaFromDiffuseTexture={true}

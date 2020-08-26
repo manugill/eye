@@ -16,6 +16,7 @@
     "react": "^16.13.1",
     "react-babylonjs": "^2.2.3",
     "react-dom": "^16.13.1",
+    "react-hot-keys": "^2.6.0",
     "react-reconciler": "^0.25.1",
     "use-async-memo": "^1.2.2",
     "xterm": "^4.8.1",

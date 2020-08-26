@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Engine, Scene } from "react-babylonjs";
-import { Vector3 } from "@babylonjs/core";
-import Hotkeys from "react-hot-keys";
+import React, { useState, useRef } from 'react';
+import { Engine, Scene, useBabylonScene } from 'react-babylonjs';
+import { Vector3 } from '@babylonjs/core';
+import Hotkeys from 'react-hot-keys';
 
-import Terminal from "./Terminal";
+import Terminal from './Terminal';
 
 const lightVectors = [
   Vector3.Up(),
@@ -15,21 +15,29 @@ const lightVectors = [
 const keyboardInput = (input) => {
   var output = {
     1: function () {
-      return console.log("onKeyDown", input);
+      return console.log('onKeyDown', input);
     },
     2: function () {
-      return console.log("onKeyUp");
+      return console.log('onKeyUp');
     },
   };
   return output[input.type]();
 };
 
-const MouseInput = (input) => {
-  console.log("mouse", input.type);
+const mouseInput = (input) => {
+  console.log('mouse', input);
 };
 
 const App = () => {
-  const [mouseInput, setMouseInput] = useState(undefined);
+  const [focus, setFocus] = useState(undefined);
+  const [scene, setScene] = useState(undefined);
+
+  const focusProps = (name: string) => ({
+    setFocus: () => focus !== name && setFocus(name),
+    focus: focus === name,
+  });
+
+  console.log('focus', focus);
 
   return (
     <Engine canvasId="main-canvas" antialias={true}>
@@ -37,14 +45,19 @@ const App = () => {
         onKeyboardObservable={(e) => {
           keyboardInput(e);
         }}
-        onPrePointerObservable={(e) => {
-          setMouseInput(e.type);
-        }}
-        onMeshPicked={(...params) => {
-          //   console.log("onMeshPicked", ...params);
-        }}
-        onSceneMount={(...params) => {
-          //   console.log("onSceneMount", ...params);
+        onPointerDown={
+          !scene
+            ? undefined
+            : (e) => {
+                const { pickedPoint } = scene.pick(e.x, e.y);
+                if (!pickedPoint) setFocus(undefined);
+              }
+        }
+        // onMeshPicked={(...params) => {
+        //   console.log('onMeshPicked', ...params);
+        // }}
+        onSceneMount={({ scene }) => {
+          setScene(scene);
         }}
       >
         <flyCamera
@@ -61,7 +74,15 @@ const App = () => {
             direction={vector}
           />
         ))}
-        <Terminal focus={mouseInput} />
+
+        <Terminal
+          position={new Vector3(2, -3, 5)}
+          {...focusProps('terminal-1')}
+        />
+        <Terminal
+          position={new Vector3(0, 2, 0)}
+          {...focusProps('terminal-2')}
+        />
       </Scene>
     </Engine>
   );
