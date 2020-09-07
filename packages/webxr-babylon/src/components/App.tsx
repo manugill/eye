@@ -4,6 +4,7 @@ import { Vector3 } from '@babylonjs/core';
 import Hotkeys from 'react-hot-keys';
 
 import Terminal from './Terminal';
+import Editor from './Editor';
 
 const lightVectors = [
   Vector3.Up(),
@@ -75,14 +76,16 @@ const App = () => {
           />
         ))}
 
-        <Terminal
+        <Editor />
+
+        {/* <Terminal
           position={new Vector3(2, -3, 5)}
           {...focusProps('terminal-1')}
         />
         <Terminal
           position={new Vector3(0, 2, 0)}
           {...focusProps('terminal-2')}
-        />
+        /> */}
       </Scene>
     </Engine>
   );

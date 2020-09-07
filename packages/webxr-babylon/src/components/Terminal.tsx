@@ -4,13 +4,13 @@ import React, {
   useRef,
   MutableRefObject,
   useState,
-} from "react";
-import { useAsyncMemo } from "use-async-memo";
-import { useBabylonScene, useClick, CreatedInstance } from "react-babylonjs";
-import { Vector3, Texture, DynamicTexture } from "@babylonjs/core";
+} from 'react';
+import { useAsyncMemo } from 'use-async-memo';
+import { useBabylonScene, useClick, CreatedInstance } from 'react-babylonjs';
+import { Vector3, Texture, DynamicTexture } from '@babylonjs/core';
 
-import createTerminal from "../fn/createTerminal";
-import FocusIndicator from "./FocusIndicator";
+import createTerminal from '../fn/createTerminal';
+import FocusIndicator from './FocusIndicator';
 
 type DynamicTextureRef = MutableRefObject<CreatedInstance<DynamicTexture>>;
 
@@ -38,7 +38,7 @@ const ComponentTerminal = ({
   const scene = useBabylonScene();
 
   const textureRefs = [...Array(USE_XTERM_WEBGL ? 4 : 3)].map(
-    useRef
+    useRef,
   ) as DynamicTextureRef[];
 
   // create terminal
@@ -51,18 +51,18 @@ const ComponentTerminal = ({
       (element) => {
         element.style.width = `${width * 100 * sizeMultiplier}px`;
         element.style.height = `${height * 100 * sizeMultiplier}px`;
-      }
+      },
     );
 
     //  (window as any).terminals.push(terminal); //
 
-    const prompt = () => terminal.write("\r\n" + "$ ");
-    terminal.write("Hello from \x1B[1;3;31mxterm.js\x1B[0m $ 😃  ");
+    const prompt = () => terminal.write('\r\n' + '$ ');
+    terminal.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ 😃  ');
     terminal.onKey((key) => {
       var char = key.domEvent.key;
       // console.log(key);
-      if (char === "" || char === "Enter") {
-        console.log("Enter pressed");
+      if (char === '' || char === 'Enter') {
+        console.log('Enter pressed');
         prompt();
       } else {
         terminal.write(char);
@@ -70,8 +70,8 @@ const ComponentTerminal = ({
     });
 
     terminal.attachCustomKeyEventHandler((event) => {
-      if (event.code === "KeyA") {
-        console.log("event", event);
+      if (event.code === 'KeyA') {
+        console.log('event', event);
         return false;
       }
 
@@ -79,11 +79,11 @@ const ComponentTerminal = ({
       return true;
     });
 
-    const screenElement = element.querySelector(".xterm-screen");
+    const screenElement = element.querySelector('.xterm-screen');
     return {
       terminal,
       element,
-      canvasElements: [...screenElement.querySelectorAll("canvas")],
+      canvasElements: [...screenElement.querySelectorAll('canvas')],
 
       // the actual created terminal size is different
       // slightly smaller than first defined
@@ -97,7 +97,7 @@ const ComponentTerminal = ({
 
   if (termData) {
     const core = (termData.terminal as any)._core;
-    console.log("termData", termData.terminal);
+    // console.log("termData", termData.terminal);
     // console.log("_onRefreshRequest", core._renderService);
     core._onRender._listeners.push((...params) => {
       //  console.log("params", params);
@@ -124,7 +124,7 @@ const ComponentTerminal = ({
         });
         terminal.onSelectionChange(() => {
           updateTexture();
-          console.log("selection change");
+          // console.log("selection change");
         });
       });
   }, [termData]);
