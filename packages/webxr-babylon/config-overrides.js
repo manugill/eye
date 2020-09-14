@@ -1,5 +1,5 @@
 // without react fast refresh
-module.exports = (config, env) => config;
+module.exports = (config, env) => config
 
 // with react fast refresh
 // const { override } = require('customize-cra');

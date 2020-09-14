@@ -25,10 +25,10 @@ function testDemo(scene) {
        balls.push(
          brick(DECK).addTo(start).at(number(WIDTH), number(HEIGHT), number(DEPTH))
        );
-   
+
        balls[i].velocity = v3(number(WIDTH), number(HEIGHT), number(DEPTH));
      }
-   
+
      function update(dt) {
        for (var i = 0; i < balls.length; ++i) {
          var ball = balls[i],
@@ -47,6 +47,6 @@ function testDemo(scene) {
        }
      }
 
-}`;
+}`
 
-export default defaultText;
+export default defaultText

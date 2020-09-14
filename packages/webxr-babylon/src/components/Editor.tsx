@@ -4,100 +4,119 @@ import React, {
   useEffect,
   useRef,
   MutableRefObject,
-} from "react";
-import { Engine, Scene, CreatedInstance } from "react-babylonjs";
+} from 'react'
+import { Engine, Scene, CreatedInstance, useClick } from 'react-babylonjs'
 import {
   Vector3,
   Color4,
   Texture,
   DynamicTexture,
   Plane,
-} from "@babylonjs/core";
-import { Primrose } from "primrose/primrose.js";
+} from '@babylonjs/core'
+import { Primrose } from 'primrose'
 
-import defaultText from "./defaultText";
+import defaultText from './defaultText'
 
-type TextureRef = CreatedInstance<Texture>;
-type DynamicTextureRef = CreatedInstance<DynamicTexture>;
-type PlaneRef = CreatedInstance<Plane>;
+type TextureRef = CreatedInstance<Texture>
+type DynamicTextureRef = CreatedInstance<DynamicTexture>
+type PlaneRef = CreatedInstance<Plane>
 
-const Editor = ({ width = 8, height = 8, ...options }) => {
-  const textureRef = useRef<TextureRef>();
-  const dynamicTextureRef = useRef<DynamicTextureRef>();
-  const planeRef = useRef<PlaneRef>();
+const Editor = ({
+  position = new Vector3(4, 0, 0),
+  width = 8,
+  height = 8,
+  pointerDown,
+  pointerUp,
+}: any) => {
+  const textureRef = useRef<TextureRef>()
+  const dynamicTextureRef = useRef<DynamicTextureRef>()
+  const planeRef = useRef<PlaneRef>()
 
   const editor = useMemo(() => {
-    return new Primrose({
+    const editor = new Primrose({
       width: width * 100,
       height: height * 100,
       scaleFactor: 1,
       fontSize: 16,
-    });
-  }, []);
+    })
 
-  var tex = defaultText;
-  editor.value = tex;
+    var tex = defaultText
+    editor.value = tex
 
-  const pointerDown = options.pointerDown;
-  const pointerUp = options.pointerUp;
-  if (pointerDown !== undefined) {
-    console.log("pointerDown", pointerDown);
-    console.log(Primrose.has(pointerDown.pickedMesh));
-    console.log(Primrose.get(pointerDown.pickedMesh));
-    var curEditor = Primrose.get(pointerDown.pickedMesh);
-
-    if (curEditor !== null) {
-      // curEditor.mouse.readDownEventUV(pointerDown);
-    } else if (Primrose.focusedControl !== null) {
-      Primrose.focusedControl.blur();
-    }
-  }
-  if (pointerUp !== undefined) {
-    console.log("pointerUp", pointerUp);
-  }
+    return editor
+  }, [])
 
   useEffect(() => {
-    const canvas = editor.canvas as OffscreenCanvas;
-    const context = canvas.getContext("2d");
-    const texture = textureRef.current.hostInstance;
-    const plane = planeRef.current.hostInstance;
+    const canvas = editor.canvas as OffscreenCanvas
+    const context = canvas.getContext('2d')
+    const texture = textureRef.current.hostInstance
+    const plane = planeRef.current.hostInstance
 
-    console.log("textures", textureRef.current, dynamicTextureRef.current);
-    console.log("context", context);
-    console.log("plane", plane);
+    console.log('textures', textureRef.current, dynamicTextureRef.current)
+    console.log('context', context)
+    console.log('plane', plane)
 
     const updateTexture = async () => {
-      const blob = await canvas.convertToBlob();
-      const blobUrl = URL.createObjectURL(blob);
-      texture.updateURL(blobUrl);
-    };
+      // @TODO: We need to improve the performance as blob conversion is expensive
+      const blob = await canvas.convertToBlob()
+      const blobUrl = URL.createObjectURL(blob)
+      texture.updateURL(blobUrl)
+    }
 
-    updateTexture();
+    updateTexture()
+
+    // Primrose tells us when it has refreshed, we don't need
+    // to do it every frame.
+    editor.addEventListener('update', function () {
+      updateTexture()
+    })
 
     // @Gagan: Do all the primrose magic in here
-    Primrose.add(plane, editor);
-  }, []);
+    Primrose.add(plane, editor)
+  }, [])
+
+  useEffect(() => {
+    console.log('pointerDown', pointerDown, pointerUp)
+
+    if (pointerDown !== undefined) {
+      console.log('pointerDown', pointerDown)
+      console.log(Primrose.has(pointerDown.pickedMesh))
+      console.log(Primrose.get(pointerDown.pickedMesh))
+      var curEditor = Primrose.get(pointerDown.pickedMesh)
+
+      if (curEditor !== null) {
+        // @Gagan: The mouse event is not the exact 2d Vector that Primrose is expecting
+        // You'll need to transform the pickedPoint object to it
+        curEditor.mouse.readDownEventUV({ uv: pointerDown.pickedPoint })
+      } else if (Primrose.focusedControl !== null) {
+        Primrose.focusedControl.blur()
+      }
+    }
+    if (pointerUp !== undefined) {
+      console.log('pointerUp', pointerUp)
+    }
+  }, [pointerDown, pointerUp])
 
   return (
     <>
       <plane
         ref={planeRef}
-        name="plane"
-        width={8}
-        height={8}
+        name='plane'
+        width={width}
+        height={height}
         rotation={new Vector3(0, 0, 0)}
-        position={new Vector3(4, 0, 0)}
+        position={position}
       >
         <standardMaterial
-          name="material"
+          name='material'
           useAlphaFromDiffuseTexture={true}
           backFaceCulling={false}
         >
           <texture
             ref={textureRef}
             hasAlpha={true}
-            assignTo="diffuseTexture"
-            url={"IMAGE_HERE"}
+            assignTo='diffuseTexture'
+            url={'IMAGE_HERE'}
           />
         </standardMaterial>
 
@@ -118,7 +137,7 @@ const Editor = ({ width = 8, height = 8, ...options }) => {
         </standardMaterial> */}
       </plane>
     </>
-  );
-};
+  )
+}
 
-export default Editor;
+export default Editor
