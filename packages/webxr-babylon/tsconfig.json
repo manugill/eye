@@ -6,7 +6,7 @@
     "jsx": "react",
     "strict": false,
     "noImplicitAny": false,
-    "noImplicitReturns": true,
+    "noImplicitReturns": false,
     "noUnusedLocals": false,
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],

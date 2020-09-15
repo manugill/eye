@@ -25,7 +25,7 @@ export default function App() {
 				// 	event.target.focus()
 				// 	console.log('onBlur', event)
 				// }}
-				onKeyDown={event => {
+				onKeyDown={(event) => {
 					event.preventDefault()
 					event.persist()
 					const handler = focus && focus.__handlers && focus.__handlers.keyDown

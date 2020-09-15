@@ -5,7 +5,13 @@ import React, {
   useRef,
   MutableRefObject,
 } from 'react'
-import { Engine, Scene, CreatedInstance, useClick } from 'react-babylonjs'
+import {
+  useBabylonScene,
+  Engine,
+  Scene,
+  CreatedInstance,
+  useClick,
+} from 'react-babylonjs'
 import {
   Vector3,
   Vector2,
@@ -15,7 +21,10 @@ import {
   Plane,
 } from '@babylonjs/core'
 import { Primrose } from 'primrose'
+import useMergedRef from '@react-hook/merged-ref'
 
+import { useActionManager } from '../fn/useActionManager.hook'
+import FocusIndicator from './FocusIndicator'
 import defaultText from './defaultText'
 
 type TextureRef = CreatedInstance<Texture>
@@ -23,13 +32,18 @@ type DynamicTextureRef = CreatedInstance<DynamicTexture>
 type PlaneRef = CreatedInstance<Plane>
 
 const Editor = ({
-  position = new Vector3(4, 0, 0),
+  position = new Vector3(0, 0, 0),
   width = 8,
   height = 8,
-  pointerMove,
-  pointerDown,
-  pointerUp,
+  focus = false,
+  setFocus = () => undefined,
 }: any) => {
+  const scene = useBabylonScene()
+  const pointerPosition = () => {
+    const pickResult = scene.pick(scene.pointerX, scene.pointerY)
+    return pickResult.getTextureCoordinates()
+  }
+
   const textureRef = useRef<TextureRef>()
   const dynamicTextureRef = useRef<DynamicTextureRef>()
   const planeRef = useRef<PlaneRef>()
@@ -50,15 +64,19 @@ const Editor = ({
   useEffect(() => {
     const canvas = editor.canvas as OffscreenCanvas
     const context = canvas.getContext('2d')
-    const texture = textureRef.current.hostInstance
+    const texture = textureRef.current?.hostInstance
+    const dynamicTexture = dynamicTextureRef.current?.hostInstance
     const plane = planeRef.current.hostInstance
 
     console.log('textures', textureRef.current, dynamicTextureRef.current)
     console.log('context', context)
     console.log('plane', plane)
+    console.log('dyanmicTexture canvas', (dynamicTexture as any)?._canvas)
 
     const updateTexture = async () => {
       // @TODO: We need to improve the performance as blob conversion is expensive
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+      console.log('canvas image data')
       const blob = await canvas.convertToBlob()
       const blobUrl = URL.createObjectURL(blob)
       texture.updateURL(blobUrl)
@@ -77,73 +95,55 @@ const Editor = ({
   }, [])
 
   useEffect(() => {
-    //console.log('pointerDown', pointerDown, pointerUp)
-
-    if (pointerMove !== undefined && null) {
-      // console.log('pointerMove', pointerMove)
-      var pointUV = new Vector2(
-        pointerMove.getTextureCoordinates().x,
-        pointerMove.getTextureCoordinates().y
-      )
-
-      var curEditor = Primrose.get(pointerMove.pickedMesh)
-
-      if (curEditor !== Primrose.hoveredControl) {
-        if (curEditor !== null) {
-          curEditor.mouse.readOverEventUV()
-        } else if (Primrose.hoveredControl != null) {
-          Primrose.hoveredControl.mouse.readOutEventUV()
-        }
-      }
-
-      if (curEditor !== null) {
-        curEditor.mouse.readMoveEventUV({
-          uv: pointUV,
-        })
-      }
+    console.log('focused', focus)
+    if (!!Primrose.focusedControl && !focus) {
+      Primrose.focusedControl.blur()
     }
-    if (pointerDown !== undefined) {
-      var pointUV = new Vector2(
-        pointerDown.getTextureCoordinates().x,
-        pointerDown.getTextureCoordinates().y
-      )
+  }, [focus])
 
-      console.log('pointerDown.X', pointerDown.getTextureCoordinates().x)
-
-      var curEditor = Primrose.get(pointerDown.pickedMesh)
-
-      if (curEditor !== null) {
-        // @Gagan: The mouse event is not the exact 2d Vector that Primrose is expecting
-        // You'll need to transform the pickedPoint object to it
-        curEditor.mouse.readDownEventUV({ uv: pointUV })
-      } else if (Primrose.focusedControl !== null) {
-        Primrose.focusedControl.blur()
+  const [actionManagerRef] = useActionManager({
+    OnPickDownTrigger: () => {
+      setFocus()
+      const uv = pointerPosition()
+      if (!uv) return
+      editor.mouse.readDownEventUV({ uv })
+    },
+    OnPickUpTrigger: () => {
+      const uv = pointerPosition()
+      if (!uv) return
+      editor.mouse.readUpEventUV({ uv })
+    },
+    OnPointerOutTrigger: () => {
+      if (Primrose.hoveredControl != null) {
+        editor.mouse.readOutEventUV()
       }
-    }
-    if (pointerUp !== undefined) {
-      var pointUV = new Vector2(
-        pointerUp.getTextureCoordinates().x,
-        pointerUp.getTextureCoordinates().y
-      )
+    },
+  })
 
-      var curEditor = Primrose.get(pointerUp.pickedMesh)
-
-      if (curEditor !== null) {
-        curEditor.mouse.readUpEventUV({ uv: pointUV })
-      }
-    }
-  }, [pointerMove, pointerDown, pointerUp])
-
+  const multiRef = useMergedRef(actionManagerRef, planeRef as any)
   return (
     <>
+      <FocusIndicator
+        focus={focus}
+        position={position}
+        width={width}
+        height={height}
+      />
       <plane
-        ref={planeRef}
+        ref={multiRef}
         name='plane'
         width={width}
         height={height}
-        rotation={new Vector3(0, 0, 0)}
         position={position}
       >
+        <pointerDragBehavior
+          moveAttached={false}
+          onDragObservable={() => {
+            const uv = pointerPosition()
+            if (!uv) return
+            editor.mouse.readMoveEventUV({ uv })
+          }}
+        />
         <standardMaterial
           name='material'
           useAlphaFromDiffuseTexture={true}
@@ -156,23 +156,29 @@ const Editor = ({
             url={'IMAGE_HERE'}
           />
         </standardMaterial>
+      </plane>
 
-        {/* TODO: Implement this using dynamic textures later to improve perf */}
-        {/* <standardMaterial
-          name="material"
+      {/* <plane
+        name='plane2'
+        width={width}
+        height={height}
+        position={new Vector3(8, 0, 0)}
+      >
+        <standardMaterial
+          name='material'
           useAlphaFromDiffuseTexture={true}
           backFaceCulling={false}
         >
           <dynamicTexture
             ref={dynamicTextureRef}
-            name="texture"
-            assignTo="diffuseTexture"
+            name='texture2'
+            assignTo='diffuseTexture'
             hasAlpha={true}
             generateMipMaps={true}
             options={editor.canvas}
           />
-        </standardMaterial> */}
-      </plane>
+        </standardMaterial>
+      </plane> */}
     </>
   )
 }

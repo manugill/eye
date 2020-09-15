@@ -33,14 +33,6 @@ const mouseInput = (input) => {
 const App = () => {
   const [focus, setFocus] = useState(undefined)
   const [scene, setScene] = useState(undefined)
-  const [pointerMove, setPointerMove] = useState(undefined)
-  const [pointerDown, setPointerDown] = useState(undefined)
-  const [pointerUp, setPointerUp] = useState(undefined)
-
-  const resetPointer = () => {
-    setPointerDown(undefined)
-    setPointerUp(undefined)
-  }
 
   const focusProps = (name: string) => ({
     setFocus: () => focus !== name && setFocus(name),
@@ -63,35 +55,9 @@ const App = () => {
         onKeyboardObservable={(e) => {
           keyboardInput(e)
         }}
-        onPointerMove={(e, pickResult, pointerType) => {
-          //setPointerMove(e)
-          //  console.log('e', mousemovef())
-          //  console.log('pickResult', pickResult)
-          setPointerMove(pickResult)
-          //resetPointer();
+        onPointerDown={(e, pickResult) => {
+          if (!pickResult.hit) setFocus(false)
         }}
-        onPointerUp={(e, pickResult) => {
-          // console.log(pickResult);
-          setPointerUp(pickResult)
-        }}
-        onPointerDown={
-          (e, pickResult) => {
-            // console.log(pickResult);
-            // console.log(e);
-
-            setPointerDown(pickResult)
-          }
-          // !scene
-          //   ? undefined
-          //   : (e) => {
-          //       setPointerDown(e);
-          //       const { pickedPoint } = scene.pick(e.x, e.y);
-          //       if (!pickedPoint) setFocus(undefined);
-          //     }
-        }
-        // onMeshPicked={(...params) => {
-        //   console.log('onMeshPicked', ...params);
-        // }}
       >
         <followCamera
           name='camera1'
@@ -108,11 +74,7 @@ const App = () => {
           />
         ))}
 
-        <Editor
-          pointerMove={pointerMove}
-          pointerDown={pointerDown}
-          pointerUp={pointerUp}
-        />
+        <Editor {...focusProps('editor-1')} />
 
         {/* <Terminal
           position={new Vector3(2, -3, 5)}
