@@ -8,6 +8,7 @@ import React, {
 import { Engine, Scene, CreatedInstance, useClick } from 'react-babylonjs'
 import {
   Vector3,
+  Vector2,
   Color4,
   Texture,
   DynamicTexture,
@@ -25,6 +26,7 @@ const Editor = ({
   position = new Vector3(4, 0, 0),
   width = 8,
   height = 8,
+  pointerMove,
   pointerDown,
   pointerUp,
 }: any) => {
@@ -40,8 +42,7 @@ const Editor = ({
       fontSize: 16,
     })
 
-    var tex = defaultText
-    editor.value = tex
+    editor.value = defaultText
 
     return editor
   }, [])
@@ -76,26 +77,62 @@ const Editor = ({
   }, [])
 
   useEffect(() => {
-    console.log('pointerDown', pointerDown, pointerUp)
+    //console.log('pointerDown', pointerDown, pointerUp)
 
+    if (pointerMove !== undefined && null) {
+      // console.log('pointerMove', pointerMove)
+      var pointUV = new Vector2(
+        pointerMove.getTextureCoordinates().x,
+        pointerMove.getTextureCoordinates().y
+      )
+
+      var curEditor = Primrose.get(pointerMove.pickedMesh)
+
+      if (curEditor !== Primrose.hoveredControl) {
+        if (curEditor !== null) {
+          curEditor.mouse.readOverEventUV()
+        } else if (Primrose.hoveredControl != null) {
+          Primrose.hoveredControl.mouse.readOutEventUV()
+        }
+      }
+
+      if (curEditor !== null) {
+        curEditor.mouse.readMoveEventUV({
+          uv: pointUV,
+        })
+      }
+    }
     if (pointerDown !== undefined) {
-      console.log('pointerDown', pointerDown)
-      console.log(Primrose.has(pointerDown.pickedMesh))
-      console.log(Primrose.get(pointerDown.pickedMesh))
+      var pointUV = new Vector2(
+        pointerDown.getTextureCoordinates().x,
+        pointerDown.getTextureCoordinates().y
+      )
+
+      console.log('pointerDown.X', pointerDown.getTextureCoordinates().x)
+
       var curEditor = Primrose.get(pointerDown.pickedMesh)
 
       if (curEditor !== null) {
         // @Gagan: The mouse event is not the exact 2d Vector that Primrose is expecting
         // You'll need to transform the pickedPoint object to it
-        curEditor.mouse.readDownEventUV({ uv: pointerDown.pickedPoint })
+        curEditor.mouse.readDownEventUV({ uv: pointUV })
       } else if (Primrose.focusedControl !== null) {
         Primrose.focusedControl.blur()
       }
     }
     if (pointerUp !== undefined) {
-      console.log('pointerUp', pointerUp)
+      var pointUV = new Vector2(
+        pointerUp.getTextureCoordinates().x,
+        pointerUp.getTextureCoordinates().y
+      )
+
+      var curEditor = Primrose.get(pointerUp.pickedMesh)
+
+      if (curEditor !== null) {
+        curEditor.mouse.readUpEventUV({ uv: pointUV })
+      }
     }
-  }, [pointerDown, pointerUp])
+  }, [pointerMove, pointerDown, pointerUp])
 
   return (
     <>

@@ -50,24 +50,29 @@ const App = () => {
   function mousemovef() {
     var pickResult = scene.pick(scene.pointerX, scene.pointerY)
 
-    console.log(pickResult)
+    return pickResult
   }
 
   return (
     <Engine canvasId='main-canvas' antialias={true}>
       <Scene
+        onSceneMount={({ scene }) => {
+          setScene(scene)
+          console.log('scene', scene)
+        }}
         onKeyboardObservable={(e) => {
           keyboardInput(e)
         }}
         onPointerMove={(e, pickResult, pointerType) => {
-          //console.log(pickResult);
-          //setPointerMove(e);
-          //mousemovef();
+          //setPointerMove(e)
+          //  console.log('e', mousemovef())
+          //  console.log('pickResult', pickResult)
+          setPointerMove(pickResult)
           //resetPointer();
         }}
         onPointerUp={(e, pickResult) => {
           // console.log(pickResult);
-          //setPointerUp(pickResult);
+          setPointerUp(pickResult)
         }}
         onPointerDown={
           (e, pickResult) => {
@@ -87,9 +92,6 @@ const App = () => {
         // onMeshPicked={(...params) => {
         //   console.log('onMeshPicked', ...params);
         // }}
-        onSceneMount={({ scene }) => {
-          setScene(scene)
-        }}
       >
         <followCamera
           name='camera1'
