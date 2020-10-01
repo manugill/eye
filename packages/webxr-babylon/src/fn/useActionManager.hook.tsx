@@ -1,6 +1,6 @@
 import {
   MutableRefObject,
-  useContext,
+  // useContext,
   useEffect,
   useRef,
   useState,
@@ -8,10 +8,10 @@ import {
 import {
   Nullable,
   Observer,
-  Scene,
-  EventState,
+  // Scene,
+  // EventState,
   ActionManager,
-  ActionEvent,
+  // ActionEvent,
   ExecuteCodeAction,
   Mesh,
   IAction,
@@ -20,13 +20,13 @@ import {
 import { Control } from '@babylonjs/gui/2D/controls/control'
 
 import {
-  SceneContext,
-  ICustomPropsHandler,
-  CustomPropsHandler,
+  // SceneContext,
+  // ICustomPropsHandler,
+  // CustomPropsHandler,
   CreatedInstance,
   MeshEventType,
-  Gui2dEventType,
-  HoverType,
+  // Gui2dEventType,
+  // HoverType,
 } from 'react-babylonjs'
 
 export const useActionManager = (
@@ -42,7 +42,7 @@ export const useActionManager = (
     if (ref.current) {
       const registeredMeshActions: Nullable<IAction>[] = []
       let observer2dGuiEnter: Nullable<Observer<Control>> = null
-      let observer2dGuiOut: Nullable<Observer<Control>> = null
+      // let observer2dGuiOut: Nullable<Observer<Control>> = null
 
       if (ref.current.metadata.isMesh === true) {
         const mesh = ref.current.hostInstance as Mesh
@@ -51,15 +51,18 @@ export const useActionManager = (
           mesh.actionManager = new ActionManager(mesh.getScene())
         }
 
-        Object.entries(eventHandlers).map(([name, func]) => {
-          const action: Nullable<IAction> = mesh.actionManager.registerAction(
-            new ExecuteCodeAction(ActionManager[name], (ev) => {
-              ;(func as MeshEventType)(ev)
-              setValue(true)
-            })
-          )
-          registeredMeshActions.push(action)
-        })
+        Object.entries(eventHandlers).map(
+          ([name, func]: [string, MeshEventType]) => {
+            const action: Nullable<IAction> = mesh.actionManager.registerAction(
+              new ExecuteCodeAction(ActionManager[name], (ev) => {
+                func(ev)
+                setValue(true)
+                return
+              })
+            )
+            return registeredMeshActions.push(action)
+          }
+        )
       } else {
         console.warn(
           'Can only apply useActionManger to meshes currently.',
@@ -68,14 +71,13 @@ export const useActionManager = (
       }
 
       if (registeredMeshActions.length > 0 || observer2dGuiEnter !== null) {
+        const mesh = ref.current?.hostInstance as Mesh
         return () => {
-          if (ref.current) {
+          if (mesh) {
             if (registeredMeshActions.length > 0) {
               registeredMeshActions.forEach((action: Nullable<IAction>) => {
-                if (action !== null) {
-                  const mesh = ref.current.hostInstance as Mesh
+                if (action !== null)
                   mesh.actionManager?.unregisterAction(action)
-                }
               })
               registeredMeshActions.splice(0, registeredMeshActions.length)
             }
@@ -83,7 +85,7 @@ export const useActionManager = (
         }
       }
     }
-  }, [ref.current])
+  }, [ref, eventHandlers])
   // todo: if use ref.current as dep,  duplicate register action.
 
   return [ref, value]
