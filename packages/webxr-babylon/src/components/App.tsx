@@ -59,7 +59,7 @@ const App = () => {
           {...focusProps('terminal-1')}
         /> */}
 
-        {/* <Editor {...focusProps('editor-1')} /> */}
+        <Editor {...focusProps('editor-1')} />
       </Scene>
     </Engine>
   )
