@@ -23,7 +23,7 @@
 		"react-scripts": "^3.4.3",
 		"react-three-fiber": "^4.2.20",
 		"socket.io-client": "^2.3.0",
-		"three": "0.119.1",
+		"three": "0.125.0",
 		"xterm": "^4.8.1",
 		"xterm-addon-webgl": "^0.8.0"
 	},
