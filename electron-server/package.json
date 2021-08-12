@@ -1,0 +1,15 @@
+{
+  "name": "electron-server",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "yarn run dev",
+    "dev": "electron index.js"
+  },
+  "dependencies": {
+    "electron": "^13.1.9",
+    "electron-devtools-installer": "^3.2.0",
+    "socket.io": "^4.1.3"
+  }
+}

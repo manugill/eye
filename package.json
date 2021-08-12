@@ -1,9 +1,0 @@
-{
-  "name": "eye",
-  "private": true,
-  "workspaces": [
-    "webxr",
-    "electron-server",
-    "theia"
-  ]
-}
