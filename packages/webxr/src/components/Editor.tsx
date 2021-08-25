@@ -91,7 +91,7 @@ const Editor = ({
 		var mesh = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), material)
 		mesh.doubleSided = true
 
-		console.log('dynamicTexture', dynamicTexture)
+		//console.log('dynamicTexture', dynamicTexture)
 
 		const updateTexture = async () => {
 			// @TODO: We need to improve the performance as blob conversion is expensive
