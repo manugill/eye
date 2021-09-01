@@ -1,8 +1,11 @@
 import { Primrose } from 'primrose'
-import React, { useMemo, useEffect, useRef } from 'react'
+import React, { useMemo, useEffect, useRef, useCallback } from 'react'
 import useMergedRef from '@react-hook/merged-ref'
 import * as THREE from 'three'
 import { ViewProps } from './App'
+import { TextureLoader, Texture, Mesh, MeshBasicMaterial } from 'three'
+import { useLoader, ReactThreeFiber } from 'react-three-fiber'
+import img from './logo512.png'
 
 const defaultText = `
 function testDemo(scene) {
@@ -56,14 +59,21 @@ function testDemo(scene) {
 }`
 
 const Editor = ({
-	position = new THREE.Vector3(0, 0, 0),
+	position = [0, 0, 0],
 	width = 16,
 	height = 8,
 	scaleFactor = 1,
 	fontSize = 16,
 	focus = false,
 	setFocus = () => undefined,
+	url = 'https://github.com',
+	resolution = [1080, 1080],
+	size = [1.08 * 2, 1.08 * 2],
+	meshProps = {},
 }: ViewProps) => {
+	const textureRef = useRef<MeshBasicMaterial>()
+	const meshRef = useRef<Mesh>()
+
 	// create editor
 	const editor = useMemo(() => {
 		const editor = new Primrose({
@@ -80,25 +90,19 @@ const Editor = ({
 	useEffect(() => {
 		const canvas = editor.canvas as OffscreenCanvas
 		const context = canvas.getContext('2d')
-		const dynamicTexture = dynamicTextureRef.current?.hostInstance
-		const texture = textureRef.current?.hostInstance
-		const plane = planeRef.current.hostInstance
+		const material = textureRef.current
+		const mesh = meshRef.current
 
-		var texture = new THREE.Texture(canvas)
-		texture.needsUpdate = true
-		var material = new THREE.MeshBasicMaterial({ map: texture, overdraw: true })
-		material.needsUpdate = true
-		var mesh = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), material)
-		mesh.doubleSided = true
-
-		//console.log('dynamicTexture', dynamicTexture)
-
+		console.log('texture--', material)
 		const updateTexture = async () => {
 			// @TODO: We need to improve the performance as blob conversion is expensive
-			const imageData = context.getImageData(0, 0, 800, canvas.height)
+
 			const blob = await canvas.convertToBlob()
 			const blobUrl = URL.createObjectURL(blob)
-			texture.updateURL(blobUrl)
+
+			const loader = new THREE.TextureLoader()
+			const texture = loader.load(blobUrl)
+			material.setValues({ map: texture })
 		}
 
 		updateTexture()
@@ -106,39 +110,45 @@ const Editor = ({
 		// Primrose tells us when it has refreshed, we don't need to do it every frame.
 		editor.addEventListener('update', () => updateTexture())
 
-		Primrose.add(plane, editor)
+		Primrose.add(mesh, editor)
 	}, [])
 
 	// handle mouse events
-	const [actionManagerRef] = useActionManager({
-		OnPickDownTrigger: () => {
-			setFocus()
+	// const [actionManagerRef] = useActionManager({
+	// 	OnPickDownTrigger: () => {
+	// 		setFocus()
 
-			const uv = pointerPosition()
-			if (!uv) return
-			editor.mouse.readDownEventUV({ uv })
-		},
-		OnPickUpTrigger: () => {
-			const uv = pointerPosition()
-			if (!uv) return
-			editor.mouse.readUpEventUV({ uv })
-		},
-		OnPointerOutTrigger: () => {
-			if (Primrose.hoveredControl !== null) editor.mouse.readOutEventUV()
-		},
-	})
-	useEffect(() => {
-		if (!!Primrose.focusedControl && !focus) Primrose.focusedControl.blur()
-	}, [focus])
+	// 		const uv = pointerPosition()
+	// 		if (!uv) return
+	// 		editor.mouse.readDownEventUV({ uv })
+	// 	},
+	// 	OnPickUpTrigger: () => {
+	// 		const uv = pointerPosition()
+	// 		if (!uv) return
+	// 		editor.mouse.readUpEventUV({ uv })
+	// 	},
+	// 	OnPointerOutTrigger: () => {
+	// 		if (Primrose.hoveredControl !== null) editor.mouse.readOutEventUV()
+	// 	},
+	// })
+	// useEffect(() => {
+	// 	if (!!Primrose.focusedControl && !focus) Primrose.focusedControl.blur()
+	// }, [focus])
 
-	const multiRef = useMergedRef<any>(actionManagerRef, planeRef)
-	const sizeProps = { width, height, position }
+	// const multiRef = useMergedRef<any>(actionManagerRef, planeRef)
+	// const sizeProps = { width, height, position }
 
 	return (
 		<>
-			<mesh>
-				<planeGeometry attach='geometry' />
-				<meshBasicMaterial attach='material' color='white' />
+			{/* <mesh ref={meshRef}>
+				<boxBufferGeometry args={[1, 1, 1]} />
+				<meshBasicMaterial attach='material'>
+					<texture ref={textureRef} />
+				</meshBasicMaterial>
+			</mesh> */}
+			<mesh position={position} {...meshProps} ref={meshRef}>
+				<planeGeometry attach='geometry' args={size} />
+				<meshBasicMaterial attach='material' color='white' ref={textureRef} />
 			</mesh>
 		</>
 	)

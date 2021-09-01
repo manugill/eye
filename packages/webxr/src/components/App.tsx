@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import React, { Suspense, useState, useRef, useCallback, useMemo } from 'react'
-import { Canvas, CanvasContext, Dom } from 'react-three-fiber'
+import { Canvas, CanvasContext, Dom, ReactThreeFiber } from 'react-three-fiber'
 import Hotkeys from 'react-hot-keys'
 import vrRaycast, { focus } from './vrRaycast'
 
@@ -10,11 +10,34 @@ import CursorSprite from './CursorSprite'
 import createButton from './createButton'
 import { cursor, eventToXY, eventToZ } from './cursor'
 
+import Editor from './Editor'
+
+export type ViewProps = {
+	width?: number
+	height?: number
+	fontSize?: number
+	scaleFactor?: number
+	focus?: boolean
+	setFocus?: () => void
+	url?: string
+	resolution?: [number, number]
+	size?: [number, number]
+	position?: ReactThreeFiber.Vector3
+	meshProps?: ReactThreeFiber.Object3DNode<THREE.Mesh, typeof THREE.Mesh>
+}
+
 export default function App() {
 	const [context, setContext] = useState<CanvasContext>()
 	const [xr, setXr] = useState()
 
 	const raycast = useMemo(() => vrRaycast(context), [context])
+
+	const [focus, setFocus] = useState(undefined)
+
+	const focusProps = (name: string) => ({
+		setFocus: () => focus !== name && setFocus(name),
+		focus: focus === name,
+	})
 
 	return (
 		<Hotkeys allowRepeat keyName='*'>
@@ -102,13 +125,23 @@ export default function App() {
 							<>loading...</>
 						</Dom>
 					}>
-					<Browser
+					<Editor
+						{...focusProps('editor-1')}
 						{...{
-							size: [1080, 1080],
-							position: [1, 1, -700],
+							size: [540, 540],
+							position: [-350, 1, -700],
 							meshProps: {},
 						}}
 					/>
+
+					<Browser
+						{...{
+							size: [270, 270],
+							position: [100, 1, -700],
+							meshProps: {},
+						}}
+					/>
+
 					{/* <Browser
 						{...{
 							url: 'https://www.google.com',
@@ -117,7 +150,7 @@ export default function App() {
 							meshProps: {},
 						}}
 					/> */}
-					<Terminal />
+
 					<CursorSprite />
 				</Suspense>
 			</Canvas>
