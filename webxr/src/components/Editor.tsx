@@ -3,7 +3,7 @@ import React, { useMemo, useEffect, useRef, useCallback } from 'react'
 import * as THREE from 'three'
 import { ViewProps } from './App'
 import { TextureLoader, Texture, Mesh, MeshBasicMaterial } from 'three'
-import { useThree, ReactThreeFiber } from '@react-three/fiber'
+import { useLoader, useThree, ReactThreeFiber } from '@react-three/fiber'
 import img from './logo512.png'
 const defaultText = `
 function testDemo(scene) {
@@ -92,7 +92,6 @@ const Editor = ({
     const material = textureRef.current
     const mesh = meshRef.current
 
-    console.log('texture--', material)
     const updateTexture = async () => {
       // @TODO: We need to improve the performance as blob conversion is expensive
 
@@ -110,7 +109,8 @@ const Editor = ({
         }
         img.src = blobUrl
       })
-
+      console.log('texture--', texture)
+      texture.needsUpdate = true
       material.setValues({ map: texture })
     }
 
@@ -146,6 +146,8 @@ const Editor = ({
 
   // const multiRef = useMergedRef<any>(actionManagerRef, planeRef)
   // const sizeProps = { width, height, position }
+  // const loader = new THREE.TextureLoader()
+  // const texture = loader.load(img)
 
   return (
     <>
