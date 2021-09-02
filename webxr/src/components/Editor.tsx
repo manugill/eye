@@ -100,14 +100,15 @@ const Editor = ({
       const blobUrl = URL.createObjectURL(blob)
 
       const loader = new THREE.TextureLoader()
-      const texture = loader.load(img, (texture) => {
-        let _img = new Image()
-        _img.onload = () => {
+      //const texture = loader.load(blobUrl)
+      const texture = loader.load(blobUrl, (texture) => {
+        let img = new Image()
+        img.onload = () => {
           const p = new THREE.Vector2(0, 0)
-          const textureNew = new THREE.CanvasTexture(_img)
+          const textureNew = new THREE.CanvasTexture(img)
           context.gl.copyTextureToTexture(p, textureNew, texture)
         }
-        _img.src = img
+        img.src = blobUrl
       })
 
       material.setValues({ map: texture })
