@@ -1,12 +1,10 @@
 import { Primrose } from 'primrose'
 import React, { useMemo, useEffect, useRef, useCallback } from 'react'
-import useMergedRef from '@react-hook/merged-ref'
 import * as THREE from 'three'
 import { ViewProps } from './App'
 import { TextureLoader, Texture, Mesh, MeshBasicMaterial } from 'three'
-import { useLoader, ReactThreeFiber } from 'react-three-fiber'
+import { useThree, ReactThreeFiber } from '@react-three/fiber'
 import img from './logo512.png'
-
 const defaultText = `
 function testDemo(scene) {
    // 🐔🥚🥚🥚
@@ -73,6 +71,7 @@ const Editor = ({
 }: ViewProps) => {
   const textureRef = useRef<MeshBasicMaterial>()
   const meshRef = useRef<Mesh>()
+  const context = useThree()
 
   // create editor
   const editor = useMemo(() => {
@@ -89,7 +88,7 @@ const Editor = ({
 
   useEffect(() => {
     const canvas = editor.canvas as OffscreenCanvas
-    const context = canvas.getContext('2d')
+    //const context = canvas.getContext('2d')
     const material = textureRef.current
     const mesh = meshRef.current
 
@@ -101,7 +100,16 @@ const Editor = ({
       const blobUrl = URL.createObjectURL(blob)
 
       const loader = new THREE.TextureLoader()
-      const texture = loader.load(blobUrl)
+      const texture = loader.load(img, (texture) => {
+        let _img = new Image()
+        _img.onload = () => {
+          const p = new THREE.Vector2(0, 0)
+          const textureNew = new THREE.CanvasTexture(_img)
+          context.gl.copyTextureToTexture(p, textureNew, texture)
+        }
+        _img.src = img
+      })
+
       material.setValues({ map: texture })
     }
 
@@ -140,6 +148,12 @@ const Editor = ({
 
   return (
     <>
+      {/* <mesh ref={meshRef}>
+				<boxBufferGeometry args={[1, 1, 1]} />
+				<meshBasicMaterial attach='material'>
+					<texture ref={textureRef} />
+				</meshBasicMaterial>
+			</mesh> */}
       <mesh position={position} {...meshProps} ref={meshRef}>
         <planeGeometry attach='geometry' args={size} />
         <meshBasicMaterial attach='material' color='white' ref={textureRef} />

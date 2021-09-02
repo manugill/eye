@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import React, { useRef, useCallback, useMemo } from 'react'
 import { useThree, ReactThreeFiber } from '@react-three/fiber'
 import io from 'socket.io-client'
+import { ViewProps } from './App'
 
 import vrRaycast, { isClosest } from './vrRaycast'
 
@@ -66,13 +67,7 @@ const Browser = ({
   size = [1.08 * 2, 1.08 * 2],
   position = [0, 0, 0],
   meshProps = {},
-}: {
-  url?: string
-  resolution?: [number, number]
-  size?: [number, number]
-  position?: ReactThreeFiber.Vector3
-  meshProps?: ReactThreeFiber.Object3DNode<THREE.Mesh, typeof THREE.Mesh>
-}) => {
+}: ViewProps) => {
   console.log('Browser render')
   const context = useThree()
 
