@@ -83,7 +83,7 @@ const Editor = ({
   }, [])
 
   useEffect(() => {
-    const canvas = editor.canvas as any
+    const canvas = editor.canvas as HTMLCanvasElement // this is actually an OffscreenCanvas but the typing sucks
     const material = textureRef.current
     const mesh = meshRef.current
 
