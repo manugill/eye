@@ -69,16 +69,16 @@ const App = () => {
       <Editor
         {...focusProps('editor-1')}
         {...{
-          size: [540, 540],
-          position: [-350, 1, -700],
+          size: [1200, 800],
+          position: [-620, 1, -700],
           meshProps: {},
         }}
       />
-
-      <Browser
+      <Editor
+        {...focusProps('editor-2')}
         {...{
-          size: [270, 270],
-          position: [100, 1, -700],
+          size: [1200, 800],
+          position: [620, 1, -700],
           meshProps: {},
         }}
       />

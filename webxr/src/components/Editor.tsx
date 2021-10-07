@@ -1,5 +1,5 @@
 import { Primrose } from 'primrose'
-import React, { useMemo, useEffect, useRef, useCallback } from 'react'
+import React, { useMemo, useEffect, useRef, useCallback, useState } from 'react'
 import * as THREE from 'three'
 import { ViewProps } from './App'
 import { TextureLoader, Texture, Mesh, MeshBasicMaterial } from 'three'
@@ -58,14 +58,10 @@ function testDemo(scene) {
 
 const Editor = ({
   position = [0, 0, 0],
-  width = 16,
-  height = 8,
-  scaleFactor = 1,
-  fontSize = 16,
+  scaleFactor = 4, // 4.0 is probably overkill. note: 2.0 seems to be buggy
+  fontSize = 12,
   focus = false,
   setFocus = () => undefined,
-  url = 'https://github.com',
-  resolution = [1080, 1080],
   size = [1.08 * 2, 1.08 * 2],
   meshProps = {},
 }: ViewProps) => {
@@ -76,8 +72,8 @@ const Editor = ({
   // create editor
   const editor = useMemo(() => {
     const editor = new Primrose({
-      width: width * 100,
-      height: height * 100,
+      width: size[0],
+      height: size[1],
       scaleFactor,
       fontSize,
     })
@@ -87,34 +83,14 @@ const Editor = ({
   }, [])
 
   useEffect(() => {
-    const canvas = editor.canvas as OffscreenCanvas
-    //const context = canvas.getContext('2d')
+    const canvas = editor.canvas as any
     const material = textureRef.current
     const mesh = meshRef.current
 
-    const updateTexture = async () => {
-      // @TODO: We need to improve the performance as blob conversion is expensive
-
-      const blob = await canvas.convertToBlob()
-      const blobUrl = URL.createObjectURL(blob)
-
-      const loader = new THREE.TextureLoader()
-      //const texture = loader.load(blobUrl)
-      const texture = loader.load(blobUrl, (texture) => {
-        let img = new Image()
-        img.onload = () => {
-          const p = new THREE.Vector2(0, 0)
-          const textureNew = new THREE.CanvasTexture(img)
-          context.gl.copyTextureToTexture(p, textureNew, texture)
-        }
-        img.src = blobUrl
-      })
-      console.log('texture--', texture)
-      texture.needsUpdate = true
-      material.setValues({ map: texture })
+    const updateTexture = () => {
+      const t = new THREE.CanvasTexture(canvas)
+      material.setValues({ map: t })
     }
-
-    updateTexture()
 
     // Primrose tells us when it has refreshed, we don't need to do it every frame.
     editor.addEventListener('update', () => updateTexture())
@@ -122,32 +98,9 @@ const Editor = ({
     Primrose.add(mesh, editor)
   }, [])
 
-  // handle mouse events
-  // const [actionManagerRef] = useActionManager({
-  // 	OnPickDownTrigger: () => {
-  // 		setFocus()
-
-  // 		const uv = pointerPosition()
-  // 		if (!uv) return
-  // 		editor.mouse.readDownEventUV({ uv })
-  // 	},
-  // 	OnPickUpTrigger: () => {
-  // 		const uv = pointerPosition()
-  // 		if (!uv) return
-  // 		editor.mouse.readUpEventUV({ uv })
-  // 	},
-  // 	OnPointerOutTrigger: () => {
-  // 		if (Primrose.hoveredControl !== null) editor.mouse.readOutEventUV()
-  // 	},
-  // })
-  // useEffect(() => {
-  // 	if (!!Primrose.focusedControl && !focus) Primrose.focusedControl.blur()
-  // }, [focus])
-
-  // const multiRef = useMergedRef<any>(actionManagerRef, planeRef)
-  // const sizeProps = { width, height, position }
-  // const loader = new THREE.TextureLoader()
-  // const texture = loader.load(img)
+  useEffect(() => {
+    if (editor.focused && !focus) Primrose.focusedControl.blur()
+  }, [focus])
 
   return (
     <>
@@ -157,9 +110,21 @@ const Editor = ({
 					<texture ref={textureRef} />
 				</meshBasicMaterial>
 			</mesh> */}
-      <mesh position={position} {...meshProps} ref={meshRef}>
-        <planeGeometry attach='geometry' args={size} />
-        <meshBasicMaterial attach='material' color='white' ref={textureRef} />
+      <mesh
+        position={position}
+        {...meshProps}
+        ref={meshRef}
+        onPointerOver={({ uv }) => editor.mouse.readOverEventUV({ uv })}
+        onPointerOut={({ uv }) => editor.mouse.readOutEventUV({ uv })}
+        onPointerMove={({ uv }) => editor.mouse.readMoveEventUV({ uv })}
+        onPointerUp={({ uv }) => editor.mouse.readUpEventUV({ uv })}
+        onPointerDown={({ uv }) => {
+          if (!focus) setFocus()
+          editor.mouse.readDownEventUV({ uv })
+        }}
+      >
+        <planeBufferGeometry attach='geometry' args={size} />
+        <meshBasicMaterial attach='material' ref={textureRef} />
       </mesh>
     </>
   )
