@@ -104,12 +104,6 @@ const Editor = ({
 
   return (
     <>
-      {/* <mesh ref={meshRef}>
-				<boxBufferGeometry args={[1, 1, 1]} />
-				<meshBasicMaterial attach='material'>
-					<texture ref={textureRef} />
-				</meshBasicMaterial>
-			</mesh> */}
       <mesh
         position={position}
         {...meshProps}
